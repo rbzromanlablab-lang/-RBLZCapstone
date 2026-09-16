@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: rblz-capstone
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: RBLZCapstone
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: rblz-capstone-db
+          property: connectionString
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rblz-capstone-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: RUN_MIGRATIONS
+        value: true
+
+databases:
+  - name: rblz-capstone-db
+    plan: free
+    databaseName: rblz_capstone
+    user: rblz_capstone
