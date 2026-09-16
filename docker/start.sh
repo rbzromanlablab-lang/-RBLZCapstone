@@ -9,6 +9,10 @@ if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     php artisan migrate --force
 fi
 
+if [ -n "${ADMIN_EMAIL:-}" ] && [ -n "${ADMIN_PASSWORD:-}" ]; then
+    php artisan db:seed --class='Database\Seeders\ProductionAdminSeeder' --force
+fi
+
 php artisan optimize:clear
 php artisan storage:link || true
 
