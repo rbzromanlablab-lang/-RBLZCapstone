@@ -303,7 +303,7 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-end gap-2 mt-4">
+<div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 mt-4">
     <a href="{{ route('properties.index') }}" class="btn btn-light border">Cancel</a>
     <button type="submit" class="btn btn-primary">{{ $submitLabel }}</button>
 </div>

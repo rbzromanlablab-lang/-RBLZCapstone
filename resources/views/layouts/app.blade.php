@@ -30,6 +30,7 @@
 
         .sidebar-shell {
             width: 260px;
+            flex-shrink: 0;
             min-height: 100vh;
             background: linear-gradient(180deg, #10253f 0%, var(--pards-navy) 100%);
             border-right: 1px solid rgba(255, 255, 255, 0.08);
@@ -57,6 +58,18 @@
 
         .content-shell {
             min-width: 0;
+        }
+
+        .account-summary, .account-details {
+            min-width: 0;
+        }
+
+        .account-details {
+            overflow-wrap: anywhere;
+        }
+
+        .account-role {
+            flex-shrink: 0;
         }
 
         .topbar-card,
@@ -106,14 +119,85 @@
 
         @media (max-width: 991.98px) {
             .sidebar-shell {
-                min-height: auto;
-                width: 100%;
+                --bs-offcanvas-width: min(320px, 88vw);
+                width: var(--bs-offcanvas-width);
+                min-height: 100%;
+                overflow-y: auto;
                 border-right: 0;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                background: linear-gradient(180deg, #10253f 0%, var(--pards-navy) 100%);
+            }
+
+            .mobile-app-header {
+                position: sticky;
+                top: 0;
+                z-index: 1020;
+                background: var(--pards-navy);
+                box-shadow: 0 2px 12px rgba(15, 23, 42, 0.12);
             }
 
             .app-shell {
                 display: block !important;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .content-shell main {
+                padding: 1rem !important;
+            }
+
+            .dashboard-card.p-4, .summary-card.p-4 {
+                padding: 1rem !important;
+            }
+
+            .topbar-card, .dashboard-card, .summary-card {
+                border-radius: 1rem;
+            }
+
+            .topbar-card h1 {
+                font-size: 1.35rem;
+            }
+
+            .account-summary {
+                flex-wrap: wrap;
+                gap: 0.5rem !important;
+                border-top: 1px solid #e5e7eb;
+                padding-top: 0.75rem;
+            }
+
+            .account-details {
+                flex: 1 1 160px;
+            }
+
+            .content-shell .btn, .mobile-app-header .btn, .sidebar-shell .btn-close {
+                min-height: 44px;
+            }
+
+            .sidebar-shell .btn-close {
+                min-width: 44px;
+            }
+
+            .form-control, .form-select {
+                min-height: 44px;
+                font-size: 1rem;
+            }
+
+            .flash-toast-container {
+                width: 100%;
+                padding: 1rem !important;
+            }
+
+            .flash-toast {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .dashboard-card {
+                overflow-wrap: anywhere;
+            }
+
+            .dashboard-section-heading {
+                flex-wrap: wrap;
+                gap: 0.75rem;
             }
         }
     </style>

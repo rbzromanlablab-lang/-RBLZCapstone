@@ -22,17 +22,13 @@
                 <p class="text-muted mb-0">{{ $roleDescription }}</p>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
-                <button type="button" class="btn btn-light rounded-circle border">
-                    <i class="bi bi-bell"></i>
-                </button>
-
-                <div class="text-end">
+            <div class="account-summary d-flex align-items-center gap-3">
+                <div class="account-details text-md-end">
                     <div class="fw-semibold">{{ $user?->name ?? 'PARDS User' }}</div>
                     <div class="text-muted small">{{ $user?->email ?? 'school@pards.local' }}</div>
                 </div>
 
-                <span class="badge rounded-pill text-bg-warning px-3 py-2">{{ $roleLabel }}</span>
+                <span class="account-role badge rounded-pill text-bg-warning px-3 py-2">{{ $roleLabel }}</span>
             </div>
         </div>
     </div>

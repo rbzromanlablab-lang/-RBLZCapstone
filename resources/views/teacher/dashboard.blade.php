@@ -36,7 +36,7 @@
     <div class="row g-4">
         <div class="col-lg-7">
             <div class="dashboard-card p-4 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="dashboard-section-heading d-flex align-items-center justify-content-between mb-4">
                     <div>
                         <p class="page-section-title mb-1">Recent Records</p>
                         <h3 class="h5 mb-0">Latest Accountability Records</h3>
@@ -77,7 +77,7 @@
 
         <div class="col-lg-5">
             <div class="dashboard-card p-4 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="dashboard-section-heading d-flex align-items-center justify-content-between mb-4">
                     <div>
                         <p class="page-section-title mb-1">Property Requests</p>
                         <h3 class="h5 mb-0">Request Tracking</h3>
