@@ -6,4 +6,7 @@ return [
         'email' => env('ADMIN_EMAIL'),
         'password' => env('ADMIN_PASSWORD'),
     ],
+
+    'users_json' => env('PRODUCTION_USERS_JSON'),
+    'user_password' => env('PRODUCTION_USERS_PASSWORD'),
 ];

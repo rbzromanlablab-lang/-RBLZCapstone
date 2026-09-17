@@ -13,6 +13,10 @@ if [ -n "${ADMIN_EMAIL:-}" ] && [ -n "${ADMIN_PASSWORD:-}" ]; then
     php artisan db:seed --class='Database\Seeders\ProductionAdminSeeder' --force
 fi
 
+if [ -n "${PRODUCTION_USERS_JSON:-}" ] && [ -n "${PRODUCTION_USERS_PASSWORD:-}" ]; then
+    php artisan db:seed --class='Database\Seeders\ProductionUsersSeeder' --force
+fi
+
 php artisan optimize:clear
 php artisan storage:link || true
 
