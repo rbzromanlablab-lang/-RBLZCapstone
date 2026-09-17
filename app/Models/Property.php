@@ -41,6 +41,7 @@ class Property extends Model
         'status',
         'location',
         'office',
+        'department',
         'location_id',
         'qr_reference',
         'qr_token',

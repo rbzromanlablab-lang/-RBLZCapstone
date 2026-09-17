@@ -26,58 +26,37 @@ class AssignmentController extends Controller
         $activeFilter = in_array($filter, ['teachers', 'staff'], true) ? $filter : 'all';
         $search = trim($request->string('search')->toString());
 
-        $teacherAssignments = Assignment::query()
-            ->with(['property.activeAssignments', 'propertyUnits', 'assignee', 'assignedBy'])
-            ->whereHas('assignee', fn ($query) => $query->where('role', User::ROLE_TEACHER))
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($nested) use ($search) {
-                    $nested->whereHas('property', function ($propertyQuery) use ($search) {
-                        $propertyQuery
-                            ->where('property_name', 'like', "%{$search}%")
-                            ->orWhere('property_code', 'like', "%{$search}%")
-                            ->orWhere('serial_number', 'like', "%{$search}%");
-                    })->orWhereHas('assignee', function ($assigneeQuery) use ($search) {
-                        $assigneeQuery
-                            ->where('name', 'like', "%{$search}%")
-                            ->orWhere('email', 'like', "%{$search}%");
+        $assignees = function (string $role, string $page) use ($search) {
+            return User::query()->where('role', $role)
+                ->whereHas('teacherAssignments')
+                ->when($search !== '', function ($query) use ($search) {
+                    $query->where(function ($nested) use ($search) {
+                        $nested->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhereHas('teacherAssignments', function ($assignments) use ($search) {
+                                $assignments->where('department', 'like', "%{$search}%")
+                                    ->orWhereHas('property', function ($properties) use ($search) {
+                                        $properties->where('property_name', 'like', "%{$search}%")
+                                            ->orWhere('property_code', 'like', "%{$search}%")
+                                            ->orWhere('serial_number', 'like', "%{$search}%");
+                                    })
+                                    ->orWhereHas('propertyUnits', fn ($units) => $units->where('serial_number', 'like', "%{$search}%"));
+                            });
                     });
-                });
-            })
-            ->latest('date_assigned')
-            ->latest()
-            ->paginate(10, ['*'], 'teacher_page')
-            ->withQueryString();
-
-        $staffAssignments = Assignment::query()
-            ->with(['property.activeAssignments', 'propertyUnits', 'assignee', 'assignedBy'])
-            ->whereHas('assignee', fn ($query) => $query->where('role', User::ROLE_STAFF))
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($nested) use ($search) {
-                    $nested->whereHas('property', function ($propertyQuery) use ($search) {
-                        $propertyQuery
-                            ->where('property_name', 'like', "%{$search}%")
-                            ->orWhere('property_code', 'like', "%{$search}%")
-                            ->orWhere('serial_number', 'like', "%{$search}%");
-                    })->orWhereHas('assignee', function ($assigneeQuery) use ($search) {
-                        $assigneeQuery
-                            ->where('name', 'like', "%{$search}%")
-                            ->orWhere('email', 'like', "%{$search}%");
-                    });
-                });
-            })
-            ->latest('date_assigned')
-            ->latest()
-            ->paginate(10, ['*'], 'staff_page')
-            ->withQueryString();
+                })
+                ->with(['teacherProfile', 'staffProfile', 'adminProfile', 'teacherAssignments' => function ($query) {
+                    $query->with(['property', 'propertyUnits', 'assignedBy'])->latest('date_assigned')->latest('id');
+                }])
+                ->orderBy('name')->orderBy('id')->paginate(8, ['*'], $page)->withQueryString();
+        };
 
         return view('assignments.index', [
-            'teacherAssignments' => $teacherAssignments,
-            'staffAssignments' => $staffAssignments,
+            'teacherAssignees' => $assignees(User::ROLE_TEACHER, 'teacher_page'),
+            'staffAssignees' => $assignees(User::ROLE_STAFF, 'staff_page'),
             'activeFilter' => $activeFilter,
             'search' => $search,
         ]);
     }
-
     public function create(Request $request): View
     {
         [$selectedTeacherId, $selectedStaffId, $selectedAssignee] = $this->prefilledAssignee($request);
@@ -115,7 +94,7 @@ class AssignmentController extends Controller
                 'quantity_assigned' => $requestedQuantity,
                 'date_assigned' => $request->date('date_assigned'),
                 'location' => $request->input('location'),
-                'department' => $request->input('department'),
+                'department' => $request->input('department') ?: $property->department,
                 'location_id' => Location::resolveId($request->input('location')),
                 'assigned_at' => $request->date('date_assigned'),
                 'remarks' => $request->input('remarks'),
@@ -240,7 +219,7 @@ class AssignmentController extends Controller
                 'quantity_assigned' => $requestedQuantity,
                 'date_assigned' => $request->date('date_assigned'),
                 'location' => $request->input('location'),
-                'department' => $request->input('department'),
+                'department' => $request->input('department') ?: $targetProperty->department,
                 'location_id' => Location::resolveId($request->input('location')),
                 'assigned_at' => $request->date('date_assigned'),
                 'remarks' => $request->input('remarks'),
@@ -354,6 +333,10 @@ class AssignmentController extends Controller
     private function assignmentProperties(Assignment $assignment)
     {
         return Property::query()
+            ->where(function ($query) use ($assignment) {
+                $query->where('quantity', '>', 0);
+                if ($assignment->exists) $query->orWhere('id', $assignment->property_id);
+            })
             ->where(function ($query) use ($assignment) {
                 $query->whereIn('status', [Property::STATUS_AVAILABLE, Property::STATUS_ASSIGNED]);
 

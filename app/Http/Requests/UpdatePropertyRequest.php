@@ -32,6 +32,7 @@ class UpdatePropertyRequest extends FormRequest
             'condition_status' => ['required', Rule::in(Property::conditionStatuses())],
             'status' => ['required', Rule::in(Property::statuses())],
             'office' => ['nullable', 'string', 'max:255'],
+            'department' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
             'qr_token' => ['nullable', 'string', 'max:255', Rule::unique('properties', 'qr_token')->ignore($propertyId)],
             'qr_code_path' => ['nullable', 'string', 'max:255'],

@@ -12,6 +12,7 @@
                 <option
                     value="{{ $property->id }}"
                     data-assignable-quantity="{{ $property->assignable_quantity }}"
+                    data-department="{{ $property->department }}"
                     @selected(old('property_id', $assignment->property_id) == $property->id)
                 >
                     {{ $property->property_code }}{{ $property->serial_number ? ' / SN: '.$property->serial_number : '' }} - {{ $property->property_name }}
@@ -200,6 +201,8 @@
             propertySelect.addEventListener('change', syncAvailableQuantity);
             propertySelect.addEventListener('change', () => {
                 document.getElementById('serial_numbers').value = '';
+                const departmentInput = document.getElementById('department');
+                if (!departmentInput.value.trim()) departmentInput.value = propertySelect.selectedOptions[0]?.dataset.department || '';
             });
             quantityInput.addEventListener('input', syncAvailableQuantity);
 

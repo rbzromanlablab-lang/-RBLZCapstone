@@ -1,5 +1,12 @@
 @csrf
 
+<div class="mb-4">
+    <label for="department" class="form-label">Department</label>
+    <input type="text" id="department" name="department" maxlength="255" placeholder="Example: Science Department"
+        class="form-control @error('department') is-invalid @enderror" value="{{ old('department', $property->department) }}">
+    @error('department')<div class="invalid-feedback">{{ $message }}</div>@enderror
+</div>
+
 @php
     $selectedQuantity = (int) old('quantity', $property->quantity ?: 1);
     $selectedUnitCost = old('unit_cost', $property->unit_cost);

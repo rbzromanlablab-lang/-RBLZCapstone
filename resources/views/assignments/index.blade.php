@@ -36,7 +36,8 @@
                     type="text"
                     name="search"
                     class="form-control"
-                    placeholder="Search property code, serial number, property name, assignee name, or email"
+                    placeholder="Search name, email, department, property, or serial number"
+                    aria-label="Search assignments"
                     value="{{ $search }}"
                 >
             </div>
@@ -50,133 +51,10 @@
         </form>
 
         @if ($activeFilter !== 'staff')
-        <div class="mb-5">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div>
-                    <h3 class="h5 mb-1">Teacher Assignments</h3>
-                    <p class="text-muted mb-0">Properties currently or previously assigned to teachers.</p>
-                </div>
-                <span class="badge text-bg-light border text-dark">{{ $teacherAssignments->total() }} records</span>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Property</th>
-                            <th>Teacher</th>
-                            <th>Quantity</th>
-                            <th>Date Assigned</th>
-                            <th>Assigned By</th>
-                            <th>Status</th>
-                            <th class="text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($teacherAssignments as $assignment)
-                            <tr>
-                                <td>
-                                    <div class="fw-semibold">{{ $assignment->property?->property_name }}</div>
-                                    <small class="text-muted d-block">{{ $assignment->property?->property_code }}</small>
-                                    <small class="text-muted d-block">SN: {{ $assignment->property?->serial_number ?: 'N/A' }}</small>
-                                    <small class="text-muted d-block">Assigned SN: {{ $assignment->propertyUnits->pluck('serial_number')->join(', ') ?: 'N/A' }}</small>
-                                </td>
-                                <td>{{ $assignment->assignee?->name }}</td>
-                                <td>{{ $assignment->quantity_assigned }}</td>
-                                <td>{{ optional($assignment->date_assigned)->format('F d, Y') }}</td>
-                                <td>{{ $assignment->assignedBy?->name ?? 'System' }}</td>
-                                <td>
-                                    <span class="badge text-bg-light border text-dark">
-                                        {{ ucfirst($assignment->status) }}
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <div class="d-inline-flex gap-2">
-                                        @if ($assignment->status === \App\Models\Assignment::STATUS_ACTIVE)
-                                            <a href="{{ route('assignments.edit', $assignment) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        @endif
-                                        <a href="{{ route('assignments.show', $assignment) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">No teacher assignment records found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-3">
-                {{ $teacherAssignments->links() }}
-            </div>
-        </div>
+            @include('assignments.partials.assignee-cards', ['assignees' => $teacherAssignees, 'groupTitle' => 'Teacher Assignments', 'groupLabel' => 'teachers'])
         @endif
-
         @if ($activeFilter !== 'teachers')
-        <div>
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div>
-                    <h3 class="h5 mb-1">Staff Assignments</h3>
-                    <p class="text-muted mb-0">Properties currently or previously assigned to staff members.</p>
-                </div>
-                <span class="badge text-bg-light border text-dark">{{ $staffAssignments->total() }} records</span>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Property</th>
-                            <th>Staff</th>
-                            <th>Quantity</th>
-                            <th>Date Assigned</th>
-                            <th>Assigned By</th>
-                            <th>Status</th>
-                            <th class="text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($staffAssignments as $assignment)
-                            <tr>
-                                <td>
-                                    <div class="fw-semibold">{{ $assignment->property?->property_name }}</div>
-                                    <small class="text-muted d-block">{{ $assignment->property?->property_code }}</small>
-                                    <small class="text-muted d-block">SN: {{ $assignment->property?->serial_number ?: 'N/A' }}</small>
-                                    <small class="text-muted d-block">Assigned SN: {{ $assignment->propertyUnits->pluck('serial_number')->join(', ') ?: 'N/A' }}</small>
-                                </td>
-                                <td>{{ $assignment->assignee?->name }}</td>
-                                <td>{{ $assignment->quantity_assigned }}</td>
-                                <td>{{ optional($assignment->date_assigned)->format('F d, Y') }}</td>
-                                <td>{{ $assignment->assignedBy?->name ?? 'System' }}</td>
-                                <td>
-                                    <span class="badge text-bg-light border text-dark">
-                                        {{ ucfirst($assignment->status) }}
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <div class="d-inline-flex gap-2">
-                                        @if ($assignment->status === \App\Models\Assignment::STATUS_ACTIVE)
-                                            <a href="{{ route('assignments.edit', $assignment) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        @endif
-                                        <a href="{{ route('assignments.show', $assignment) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">No staff assignment records found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-3">
-                {{ $staffAssignments->links() }}
-            </div>
-        </div>
+            @include('assignments.partials.assignee-cards', ['assignees' => $staffAssignees, 'groupTitle' => 'Staff Assignments', 'groupLabel' => 'staff members'])
         @endif
     </div>
 @endsection

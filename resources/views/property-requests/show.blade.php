@@ -70,7 +70,7 @@
                                 <select id="property_id" name="property_id" class="form-select">
                                     <option value="">Choose an inventory item</option>
                                     @foreach ($properties as $property)
-                                        <option value="{{ $property->id }}" data-name="{{ $property->property_name }}" data-stock="{{ $property->quantity }}"
+                                        <option value="{{ $property->id }}" data-name="{{ $property->property_name }}" data-stock="{{ $property->quantity }}" data-department="{{ $property->department }}"
                                             @disabled($property->quantity < $propertyRequest->requested_quantity)
                                             @selected((string) old('property_id', $propertyRequest->selected_property_id) === (string) $property->id)>
                                             {{ $property->property_name }} - {{ $property->property_code }} ({{ $property->quantity }} available)
@@ -123,6 +123,10 @@
         };
         decision.addEventListener('change', updateSelection);
         selection?.addEventListener('change', updateSelection);
+        selection?.addEventListener('change', () => {
+            const department = document.getElementById('department');
+            if (department && !department.value.trim()) department.value = selection.selectedOptions[0]?.dataset.department || '';
+        });
         updateSelection();
         requestForm.addEventListener('submit', (event) => {
             if (decision.value === 'fulfilled' && !window.confirm('Assign the selected property to this end-user and create the receiving receipt?')) event.preventDefault();

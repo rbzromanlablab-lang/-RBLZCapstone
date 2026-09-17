@@ -76,7 +76,7 @@ class PropertyRequestController extends Controller
         return view('property-requests.show', [
             'propertyRequest' => $propertyRequest,
             'statuses' => PropertyRequestRecord::statuses(),
-            'properties' => Property::query()->where('quantity', '>', 0)
+            'properties' => Property::query()->where('quantity', '>=', max(1, $propertyRequest->requested_quantity))
                 ->when($request->user()->isStaff() && $propertyRequest->status === PropertyRequestRecord::STATUS_APPROVED,
                     fn ($query) => $query->where('id', $propertyRequest->selected_property_id))
                 ->whereNotIn('status', [Property::STATUS_DISPOSED, Property::STATUS_FOR_DISPOSAL])
@@ -99,7 +99,7 @@ class PropertyRequestController extends Controller
                         throw ValidationException::withMessages(['property_id' => 'Select the property approved by the admin for this request.']);
                     }
                     $assignment = app(RequestAssignmentService::class)->assign($record, $request->integer('property_id'), $request->user());
-                    $assignment->update(['department' => $request->input('department')]);
+                    $assignment->update(['department' => $request->input('department') ?: $assignment->department]);
                     app(\App\Services\AssignmentSerialService::class)->apply($assignment, $request->input('serial_numbers'));
                     $record->update(['status' => PropertyRequestRecord::STATUS_FULFILLED, 'assignment_id' => $assignment->id, 'selected_property_id' => $assignment->property_id]);
                     return;

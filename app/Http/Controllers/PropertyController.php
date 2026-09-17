@@ -139,6 +139,7 @@ class PropertyController extends Controller
         $validated['brand'] = $this->normalizeText($validated['brand'] ?? null);
         $validated['model'] = $this->normalizeText($validated['model'] ?? null);
         $validated['office'] = $this->normalizeText($validated['office'] ?? null);
+        $validated['department'] = $this->normalizeText($validated['department'] ?? null);
         $validated['location'] = $this->normalizeText($validated['location'] ?? null);
         $validated['serial_number'] = $this->normalizeText($validated['serial_number'] ?? null)
             ?: Property::generateSerialNumber();

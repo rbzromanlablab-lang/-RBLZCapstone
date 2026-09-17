@@ -45,6 +45,7 @@ class RequestAssignmentService
             'date_assigned' => today(),
             'assigned_at' => today(),
             'location' => $property->location,
+            'department' => $property->department,
             'location_id' => $property->location_id,
             'remarks' => 'Approved property request #'.$request->id.': '.$request->requested_item_name,
             'status' => Assignment::STATUS_ACTIVE,
