@@ -268,6 +268,7 @@
             }
         }
     </style>
+    @include('layouts.partials.button-styles')
 </head>
 <body>
     <main class="login-page">

@@ -267,6 +267,7 @@
             }
         }
     </style>
+    @include('layouts.partials.button-styles')
     @stack('styles')
 </head>
 <body>
