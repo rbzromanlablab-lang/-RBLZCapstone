@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/photo', [ProfileController::class, 'photo'])->name('profile.photo');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/property-requests/{propertyRequest}/receipt', [PropertyRequestController::class, 'receipt'])->name('property-requests.receipt');
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
@@ -44,6 +45,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:admin,staff')->group(function () {
+        Route::get('/property-requests', [PropertyRequestController::class, 'index'])->name('property-requests.index');
+        Route::get('/property-requests/{propertyRequest}', [PropertyRequestController::class, 'show'])->name('property-requests.show');
+        Route::patch('/property-requests/{propertyRequest}/status', [PropertyRequestController::class, 'updateStatus'])->name('property-requests.status');
         Route::resource('properties', PropertyController::class);
         Route::resource('assignments', AssignmentController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
         Route::get('/assignments/{assignment}/print', [AssignmentController::class, 'print'])->name('assignments.print');
@@ -69,9 +73,6 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:staff')->group(function () {
         Route::get('/staff/dashboard', [DashboardController::class, 'staff'])->name('staff.dashboard');
-        Route::get('/property-requests', [PropertyRequestController::class, 'index'])->name('property-requests.index');
-        Route::get('/property-requests/{propertyRequest}', [PropertyRequestController::class, 'show'])->name('property-requests.show');
-        Route::patch('/property-requests/{propertyRequest}/status', [PropertyRequestController::class, 'updateStatus'])->name('property-requests.status');
     });
 
     Route::middleware('role:teacher')->group(function () {

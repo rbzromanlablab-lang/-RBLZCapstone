@@ -41,7 +41,7 @@ class TeacherPropertyController extends Controller
 
         $pendingPropertyRequestCount = PropertyRequestRecord::query()
             ->where('requested_by', $teacher->id)
-            ->where('status', PropertyRequestRecord::STATUS_PENDING)
+            ->whereIn('status', [PropertyRequestRecord::STATUS_PENDING, PropertyRequestRecord::STATUS_REVIEWED, PropertyRequestRecord::STATUS_AWAITING_STOCK, PropertyRequestRecord::STATUS_APPROVED])
             ->count();
 
         $recentPropertyRequests = PropertyRequestRecord::query()

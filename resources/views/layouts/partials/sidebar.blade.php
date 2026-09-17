@@ -22,7 +22,7 @@
         ['label' => $role === 'admin' ? 'View Disposal Request' : 'Request Disposal', 'icon' => 'bi-archive-fill', 'url' => $role === 'admin' ? route('disposals.index') : route('disposals.create'), 'visible' => in_array($role, ['admin', 'staff'], true)],
         ['label' => 'Reports', 'icon' => 'bi-bar-chart-fill', 'url' => route('reports.index'), 'visible' => in_array($role, ['admin', 'staff'], true)],
         ['label' => 'QR Codes', 'icon' => 'bi-qr-code-scan', 'url' => route('qr.index'), 'visible' => in_array($role, ['admin', 'staff'], true)],
-        ['label' => 'Confirm Property Requests', 'icon' => 'bi-clipboard-plus-fill', 'url' => route('property-requests.index'), 'visible' => $role === 'staff'],
+        ['label' => $role === 'admin' ? 'Approve Property Requests' : 'Property Requests', 'icon' => 'bi-clipboard-plus-fill', 'url' => route('property-requests.index'), 'visible' => in_array($role, ['admin', 'staff'], true)],
         ['label' => 'My Accountabilities', 'icon' => 'bi-backpack4-fill', 'url' => route('teacher.properties.index'), 'visible' => $role === 'teacher'],
         ['label' => 'Property Requests', 'icon' => 'bi-clipboard-plus-fill', 'url' => route('teacher.property-requests.index'), 'visible' => $role === 'teacher'],
         ['label' => 'My Profile', 'icon' => 'bi-person-circle', 'url' => route('profile.edit'), 'visible' => true],

@@ -114,7 +114,7 @@
                                     </div>
                                 </div>
                                 <span class="badge text-bg-light border text-dark">
-                                    {{ ucfirst($propertyRequest->status) }}
+                                    {{ $propertyRequest->status_label }}
                                 </span>
                             </div>
                         </div>

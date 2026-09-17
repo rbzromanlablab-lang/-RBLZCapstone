@@ -83,21 +83,21 @@ class PropertyRequestManagementTest extends TestCase
 
         $showResponse = $this->actingAs($staff)->get('/property-requests/'.$propertyRequest->id);
         $showResponse->assertOk();
-        $showResponse->assertSee('Confirm Request');
+        $showResponse->assertSee('Review and Forward');
         $showResponse->assertSee('Printer Ink');
 
         $updateResponse = $this->actingAs($staff)->patch('/property-requests/'.$propertyRequest->id.'/status', [
-            'status' => PropertyRequestRecord::STATUS_APPROVED,
-            'response_notes' => 'Approved for next office release cycle.',
+            'status' => PropertyRequestRecord::STATUS_REVIEWED,
+            'response_notes' => 'Reviewed for admin approval.',
         ]);
 
         $updateResponse->assertRedirect('/property-requests/'.$propertyRequest->id);
 
         $this->assertDatabaseHas('property_requests', [
             'id' => $propertyRequest->id,
-            'processed_by' => $staff->id,
-            'status' => PropertyRequestRecord::STATUS_APPROVED,
-            'response_notes' => 'Approved for next office release cycle.',
+            'reviewed_by' => $staff->id,
+            'status' => PropertyRequestRecord::STATUS_REVIEWED,
+            'review_notes' => 'Reviewed for admin approval.',
         ]);
     }
 }

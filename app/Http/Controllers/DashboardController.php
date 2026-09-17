@@ -81,6 +81,12 @@ class DashboardController extends Controller
         return match ($role) {
             User::ROLE_ADMIN => [
                 [
+                    'label' => 'Approve Property Requests',
+                    'description' => 'Review requests forwarded by staff and approve available properties.',
+                    'icon' => 'bi-clipboard-check',
+                    'url' => route('property-requests.index'),
+                ],
+                [
                     'label' => 'Manage Users',
                     'description' => 'Create, update, activate, or deactivate accounts.',
                     'icon' => 'bi-people-fill',

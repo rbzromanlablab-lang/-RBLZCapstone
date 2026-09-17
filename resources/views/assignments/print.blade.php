@@ -158,7 +158,7 @@
     <main class="page">
         <div class="print-actions">
             <button type="button" onclick="window.print()">Print</button>
-            <a href="{{ route('assignments.show', $assignment) }}">Back</a>
+            <a href="{{ $backUrl ?? route('assignments.show', $assignment) }}">Back</a>
         </div>
 
         <header class="header">
@@ -167,6 +167,9 @@
             <p>San Carlos City, Pangasinan</p>
             <h2>Property Receiving Copy</h2>
             <p>Property Accountability Records and Disposal System</p>
+            @isset ($requestNumber)
+                <p>Property Request #{{ $requestNumber }} | Approved by: {{ $approvedBy?->name ?? 'N/A' }}</p>
+            @endisset
         </header>
 
         <section class="meta">

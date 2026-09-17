@@ -39,10 +39,13 @@
                             <td>{{ optional($propertyRequest->needed_by)->format('F d, Y') ?: 'N/A' }}</td>
                             <td>
                                 <span class="badge text-bg-light border text-dark">
-                                    {{ ucfirst($propertyRequest->status) }}
+                                    {{ $propertyRequest->status_label }}
                                 </span>
+                                @if ($propertyRequest->assignment_id)
+                                    <a class="btn btn-sm btn-outline-primary mt-2" href="{{ route('property-requests.receipt', $propertyRequest) }}">Print Receipt</a>
+                                @endif
                             </td>
-                            <td>{{ $propertyRequest->processedBy?->name ?: 'Pending review' }}</td>
+                            <td>{{ $propertyRequest->processedBy?->name ?? $propertyRequest->reviewedBy?->name ?? 'Pending review' }}</td>
                             <td>{{ optional($propertyRequest->created_at)->format('F d, Y h:i A') ?: 'N/A' }}</td>
                         </tr>
                         @if ($propertyRequest->response_notes)
