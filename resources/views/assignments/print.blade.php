@@ -162,6 +162,7 @@
         </div>
 
         <header class="header">
+            @include('partials.print-logo')
             <h1>Abanon National High School</h1>
             <p>San Carlos City, Pangasinan</p>
             <h2>Property Receiving Copy</h2>

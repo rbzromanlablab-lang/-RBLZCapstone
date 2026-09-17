@@ -6,12 +6,13 @@
 
 @section('content')
     <div class="dashboard-card p-4">
+        @include('reports.partials.print-header')
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
             <div>
                 <h2 class="h4 mb-1">Disposal Report</h2>
                 <p class="text-muted mb-0">Printable and downloadable report of disposed property items.</p>
             </div>
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2 report-actions">
                 <button type="button" onclick="window.print()" class="btn btn-outline-secondary">Print</button>
                 <a href="{{ route('reports.disposals.csv') }}" class="btn btn-outline-success">CSV Export</a>
                 <a href="{{ route('reports.disposals.pdf') }}" class="btn btn-primary">Download PDF</a>

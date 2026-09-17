@@ -13,6 +13,11 @@
     </style>
 </head>
 <body>
+    <div style="text-align: center; margin-bottom: 20px; color: #000;">
+        @include('partials.print-logo')
+        <div style="font-size: 16px; font-weight: bold;">ABANON NATIONAL HIGH SCHOOL</div>
+        <div>San Carlos City, Pangasinan</div>
+    </div>
     <h1>{{ $title }}</h1>
     <p>Generated from Property Accountability Records and Disposal System (PARDS)</p>
     @yield('pdf-content')

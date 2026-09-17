@@ -59,6 +59,7 @@
     @endunless
     <main class="page">
         <div class="header">
+            @include('partials.print-logo')
             <p><strong>ABANON NATIONAL HIGH SCHOOL</strong></p>
             <p>San Carlos City, Pangasinan</p>
             <h1>PROPERTY ACCOUNTABILITY RECORD</h1>
