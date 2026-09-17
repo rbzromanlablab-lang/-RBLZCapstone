@@ -50,7 +50,6 @@
             font-weight: 500;
         }
 
-        .sidebar-shell .nav-link:hover,
         .sidebar-shell .nav-link.active {
             color: #fff;
             background: rgba(255, 255, 255, 0.12);
@@ -58,6 +57,34 @@
 
         .content-shell {
             min-width: 0;
+        }
+
+        .hamburger-icon {
+            display: inline-block;
+            position: relative;
+            width: 22px;
+            height: 18px;
+            vertical-align: middle;
+        }
+
+        .hamburger-icon span {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            border-radius: 2px;
+            background: currentColor;
+            transition: transform 220ms ease, opacity 160ms ease;
+        }
+
+        .hamburger-icon span:nth-child(1) { top: 0; }
+        .hamburger-icon span:nth-child(2) { top: 8px; }
+        .hamburger-icon span:nth-child(3) { top: 16px; }
+        .hamburger-icon.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger-icon.is-open span:nth-child(2) { opacity: 0; }
+        .hamburger-icon.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        @media (prefers-reduced-motion: reduce) {
+            .hamburger-icon span { transition: none; }
         }
 
         .account-summary, .account-details {
@@ -327,6 +354,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const navigation = document.getElementById('appNavigation');
+        const navigationToggle = document.querySelector('[data-navigation-toggle]');
+        const updateNavigationIcon = (isOpen) => {
+            navigationToggle.setAttribute('aria-expanded', String(isOpen));
+            document.querySelectorAll('.hamburger-icon').forEach((icon) => {
+                icon.classList.toggle('is-open', isOpen);
+            });
+        };
+        navigation.addEventListener('show.bs.offcanvas', () => updateNavigationIcon(true));
+        navigation.addEventListener('hide.bs.offcanvas', () => updateNavigationIcon(false));
+        navigation.addEventListener('hidden.bs.offcanvas', () => updateNavigationIcon(false));
+
         document.querySelectorAll('[data-flash-toast]').forEach((element) => {
             bootstrap.Toast.getOrCreateInstance(element).show();
         });

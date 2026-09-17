@@ -34,8 +34,8 @@
         <i class="bi bi-building-check me-2" aria-hidden="true"></i>PARDS
     </a>
     <button class="btn btn-outline-light d-flex align-items-center gap-2" type="button"
-        data-bs-toggle="offcanvas" data-bs-target="#appNavigation" aria-controls="appNavigation">
-        <i class="bi bi-list fs-5" aria-hidden="true"></i>Menu
+        data-bs-toggle="offcanvas" data-bs-target="#appNavigation" aria-controls="appNavigation" aria-expanded="false" data-navigation-toggle>
+        <span class="hamburger-icon" aria-hidden="true"><span></span><span></span><span></span></span>Menu
     </button>
 </header>
 
@@ -43,8 +43,10 @@
     tabindex="-1" id="appNavigation" aria-labelledby="navigationTitle">
     <div class="d-flex align-items-center justify-content-between d-lg-none mb-3">
         <h2 class="h5 text-white mb-0" id="navigationTitle">Navigation</h2>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-            data-bs-target="#appNavigation" aria-label="Close navigation"></button>
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="offcanvas"
+            data-bs-target="#appNavigation" aria-label="Close navigation">
+            <span class="hamburger-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
     </div>
     <div class="sidebar-header mb-4 pb-3">
         <a href="{{ $dashboardRoute }}" class="text-decoration-none text-white">

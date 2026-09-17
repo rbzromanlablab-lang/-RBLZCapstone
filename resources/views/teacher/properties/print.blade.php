@@ -35,9 +35,7 @@
         .print-actions form { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
         .print-actions label { color: #183153; font-weight: 600; }
         .print-actions select { padding: 10px; border: 1px solid #bacfe1; border-radius: 8px; font-size: 16px; }
-        @media (hover: hover) and (pointer: fine) {
-            .print-actions a:hover, .print-actions button:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(24, 49, 83, 0.2); filter: brightness(1.08); }
-        }
+
         .print-actions a:focus-visible, .print-actions button:focus-visible, .print-actions select:focus-visible { outline: 3px solid #183153; outline-offset: 3px; }
         .print-actions a:active, .print-actions button:active { transform: translateY(1px); filter: brightness(0.92); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15); }
         @media (prefers-reduced-motion: reduce) {

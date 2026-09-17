@@ -54,26 +54,18 @@
         box-shadow: 0 0 0 2px #fff;
     }
 
-    @media (hover: hover) and (pointer: fine) {
-        .btn:not(:disabled):not(.disabled):hover {
-            translate: 0 -2px;
-            box-shadow: 0 5px 12px rgba(24, 49, 83, 0.18);
-        }
-
-        .sidebar-shell .nav-link:hover {
-            color: #f3dfb6;
-            background: rgba(217, 164, 65, 0.14);
-        }
-
-        .btn-close:not(:disabled):hover, .password-toggle:not(:disabled):hover {
-            opacity: 1;
-            background-color: rgba(217, 164, 65, 0.18);
-        }
-
-        a.profile-avatar:hover {
-            box-shadow: 0 0 0 3px #d9a441;
-        }
+    .btn:hover {
+        color: var(--bs-btn-color);
+        background-color: var(--bs-btn-bg);
+        border-color: var(--bs-btn-border-color);
     }
+
+    .btn.login-button:hover {
+        color: #fff;
+        background: var(--pards-primary);
+    }
+
+    .btn-close:hover { opacity: var(--bs-btn-close-opacity); }
 
     .btn:not(:disabled):not(.disabled):active {
         translate: 0 1px;
