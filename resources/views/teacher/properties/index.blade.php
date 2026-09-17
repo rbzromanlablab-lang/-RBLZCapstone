@@ -17,7 +17,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle mobile-record-table">
                 <thead>
                     <tr>
                         <th>Property Code</th>
@@ -35,21 +35,21 @@
                     @forelse ($properties as $property)
                         @php($assignment = $property->assignments->first())
                         <tr>
-                            <td class="fw-semibold">{{ $property->property_code }}</td>
-                            <td>{{ $property->serial_number ?: 'N/A' }}</td>
-                            <td>{{ $property->property_name }}</td>
-                            <td>{{ $property->category ?: 'N/A' }}</td>
-                            <td>{{ $assignment?->quantity_assigned ?? 0 }} {{ $property->unit }}</td>
-                            <td>{{ $assignment?->propertyUnits?->pluck('serial_number')->join(', ') ?: 'N/A' }}</td>
-                            <td>{{ ucfirst(str_replace('_', ' ', $property->condition_status)) }}</td>
-                            <td>{{ optional($assignment?->date_assigned)->format('F d, Y') }}</td>
-                            <td class="text-end">
+                            <td data-label="Property Code" class="fw-semibold">{{ $property->property_code }}</td>
+                            <td data-label="Serial Number">{{ $property->serial_number ?: 'N/A' }}</td>
+                            <td data-label="Property Name">{{ $property->property_name }}</td>
+                            <td data-label="Category">{{ $property->category ?: 'N/A' }}</td>
+                            <td data-label="Quantity">{{ $assignment?->quantity_assigned ?? 0 }} {{ $property->unit }}</td>
+                            <td data-label="Assigned Serials">{{ $assignment?->propertyUnits?->pluck('serial_number')->join(', ') ?: 'N/A' }}</td>
+                            <td data-label="Condition">{{ ucfirst(str_replace('_', ' ', $property->condition_status)) }}</td>
+                            <td data-label="Date Assigned">{{ optional($assignment?->date_assigned)->format('F d, Y') }}</td>
+                            <td class="text-end record-action">
                                 <a href="{{ route('teacher.properties.show', $property) }}" class="btn btn-sm btn-outline-primary">View Details</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">No assigned properties found.</td>
+                            <td colspan="9" class="text-center py-5 text-muted record-empty">No assigned properties found.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -72,6 +72,24 @@
             flex-shrink: 0;
         }
 
+        .profile-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--pards-sky);
+        }
+
+        .table-responsive {
+            overflow-wrap: normal;
+            word-break: normal;
+        }
+
+        .table-responsive th {
+            white-space: nowrap;
+        }
+
         .topbar-card,
         .dashboard-card,
         .summary-card {
@@ -198,6 +216,54 @@
             .dashboard-section-heading {
                 flex-wrap: wrap;
                 gap: 0.75rem;
+            }
+
+            .mobile-record-table thead {
+                display: none;
+            }
+
+            .mobile-record-table, .mobile-record-table tbody,
+            .mobile-record-table tr, .mobile-record-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .mobile-record-table tr {
+                border: 1px solid #dee2e6;
+                border-radius: 0.75rem;
+                margin-bottom: 1rem;
+                padding: 0.75rem;
+            }
+
+            .mobile-record-table td {
+                display: flex;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: 0.65rem 0;
+                text-align: right;
+                overflow-wrap: anywhere;
+            }
+
+            .mobile-record-table td[data-label]::before {
+                content: attr(data-label);
+                flex: 0 0 42%;
+                text-align: left;
+                font-weight: 600;
+                color: #6b7280;
+                overflow-wrap: normal;
+            }
+
+            .mobile-record-table td:last-child {
+                border: 0;
+            }
+
+            .mobile-record-table .record-action .btn {
+                width: 100%;
+            }
+
+            .mobile-record-table .record-empty {
+                display: block;
+                text-align: center;
             }
         }
     </style>

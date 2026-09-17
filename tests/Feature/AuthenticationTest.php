@@ -24,7 +24,7 @@ class AuthenticationTest extends TestCase
             'privacy_consent' => '1',
         ]);
 
-        $response->assertRedirect('/admin/dashboard');
+        $response->assertRedirect('/profile');
         $this->assertAuthenticatedAs($admin);
     }
 
@@ -42,7 +42,7 @@ class AuthenticationTest extends TestCase
             'privacy_consent' => '1',
         ]);
 
-        $response->assertRedirect('/staff/dashboard');
+        $response->assertRedirect('/profile');
         $this->assertAuthenticatedAs($staff);
     }
 
@@ -60,7 +60,7 @@ class AuthenticationTest extends TestCase
             'privacy_consent' => '1',
         ]);
 
-        $response->assertRedirect('/teacher/dashboard');
+        $response->assertRedirect('/profile');
         $this->assertAuthenticatedAs($teacher);
     }
 
@@ -78,7 +78,7 @@ class AuthenticationTest extends TestCase
             'privacy_consent' => '1',
         ]);
 
-        $response->assertRedirect('/staff/dashboard');
+        $response->assertRedirect('/profile');
         $this->assertAuthenticatedAs($staff);
     }
 

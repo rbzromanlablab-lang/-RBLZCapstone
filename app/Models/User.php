@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->hasMany(Property::class, 'created_by');
     }
 
+    public function profilePhoto(): HasOne
+    {
+        return $this->hasOne(ProfilePhoto::class);
+    }
+
     public function adminProfile(): HasOne
     {
         return $this->hasOne(Admin::class);

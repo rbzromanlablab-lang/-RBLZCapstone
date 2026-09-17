@@ -48,6 +48,10 @@ class AuthenticatedSessionController extends Controller
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
+        if (! $user->profilePhoto()->exists()) {
+            return redirect()->route('profile.edit');
+        }
+
         return redirect()->intended($this->redirectPathByRole($user));
     }
 

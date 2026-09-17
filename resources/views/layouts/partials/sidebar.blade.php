@@ -25,6 +25,7 @@
         ['label' => 'Confirm Property Requests', 'icon' => 'bi-clipboard-plus-fill', 'url' => route('property-requests.index'), 'visible' => $role === 'staff'],
         ['label' => 'My Accountabilities', 'icon' => 'bi-backpack4-fill', 'url' => route('teacher.properties.index'), 'visible' => $role === 'teacher'],
         ['label' => 'Property Requests', 'icon' => 'bi-clipboard-plus-fill', 'url' => route('teacher.property-requests.index'), 'visible' => $role === 'teacher'],
+        ['label' => 'My Profile', 'icon' => 'bi-person-circle', 'url' => route('profile.edit'), 'visible' => true],
     ];
 @endphp
 

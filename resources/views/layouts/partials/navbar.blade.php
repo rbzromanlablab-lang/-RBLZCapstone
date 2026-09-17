@@ -23,6 +23,13 @@
             </div>
 
             <div class="account-summary d-flex align-items-center gap-3">
+                <a href="{{ route('profile.edit') }}" class="profile-avatar d-inline-flex align-items-center justify-content-center text-decoration-none" aria-label="Edit profile picture">
+                    @if ($user?->profilePhoto()->exists())
+                        <img src="{{ route('profile.photo') }}" alt="Your profile picture" class="profile-avatar">
+                    @else
+                        <i class="bi bi-person-circle fs-3" aria-hidden="true"></i>
+                    @endif
+                </a>
                 <div class="account-details text-md-end">
                     <div class="fw-semibold">{{ $user?->name ?? 'PARDS User' }}</div>
                     <div class="text-muted small">{{ $user?->email ?? 'school@pards.local' }}</div>
