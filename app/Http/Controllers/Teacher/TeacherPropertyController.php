@@ -8,6 +8,8 @@ use App\Models\Property;
 use App\Models\PropertyRequestRecord;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Response;
 
 class TeacherPropertyController extends Controller
 {
@@ -83,7 +85,7 @@ class TeacherPropertyController extends Controller
         ]);
     }
 
-    public function print(Request $request): View
+    public function print(Request $request): View|Response
     {
         $teacher = $request->user();
 
@@ -106,11 +108,20 @@ class TeacherPropertyController extends Controller
             ->orderBy('property_name')
             ->get();
 
-        return view('teacher.properties.print', [
+        $data = [
             'properties' => $properties,
             'teacher' => $teacher,
             'printedAt' => now(),
-        ]);
+            'isPdf' => $request->boolean('pdf'),
+        ];
+
+        if ($data['isPdf']) {
+            return Pdf::loadView('teacher.properties.print', $data)
+                ->setPaper('a4', 'landscape')
+                ->download('my-accountabilities.pdf');
+        }
+
+        return view('teacher.properties.print', $data);
     }
 
     public function show(Request $request, Property $property): View
