@@ -51,12 +51,62 @@
         }
 
         .sidebar-shell .nav-link.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.12);
+            color: #fff3d6;
+            background: linear-gradient(90deg, rgba(217, 164, 65, 0.2), rgba(217, 164, 65, 0.06));
+            box-shadow: inset 3px 0 0 var(--pards-gold);
+        }
+
+        .sidebar-shell .nav-link.active i {
+            color: var(--pards-gold);
+        }
+
+        @keyframes sidebar-item-enter {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (min-width: 992px) and (prefers-reduced-motion: no-preference) {
+            .sidebar-shell .nav-item {
+                animation: sidebar-item-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+                animation-delay: var(--menu-delay, 0ms);
+            }
+        }
+
+        @media (max-width: 991.98px) and (prefers-reduced-motion: no-preference) {
+            .sidebar-shell.offcanvas-lg {
+                transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            .sidebar-shell:is(.showing, .show):not(.hiding) .nav-item {
+                animation: sidebar-item-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+                animation-delay: calc(80ms + var(--menu-delay, 0ms));
+            }
+
+            .sidebar-shell:is(.showing, .show):not(.hiding) .sidebar-header {
+                animation: sidebar-item-enter 320ms ease-out both;
+            }
         }
 
         .content-shell {
             min-width: 0;
+        }
+
+        @media (min-width: 992px) {
+            .sidebar-shell {
+                overflow: hidden;
+                transition: width 320ms ease, padding 320ms ease, opacity 240ms ease;
+            }
+            .sidebar-shell > * { min-width: 211px; }
+            .sidebar-shell.desktop-collapsed {
+                width: 0;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                border-right: 0;
+                opacity: 0;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .sidebar-shell { transition: none !important; }
         }
 
         .hamburger-icon {
@@ -358,13 +408,29 @@
         const navigationToggle = document.querySelector('[data-navigation-toggle]');
         const updateNavigationIcon = (isOpen) => {
             navigationToggle.setAttribute('aria-expanded', String(isOpen));
-            document.querySelectorAll('.hamburger-icon').forEach((icon) => {
+            document.querySelectorAll('.mobile-app-header .hamburger-icon, .sidebar-shell .hamburger-icon').forEach((icon) => {
                 icon.classList.toggle('is-open', isOpen);
             });
         };
         navigation.addEventListener('show.bs.offcanvas', () => updateNavigationIcon(true));
         navigation.addEventListener('hide.bs.offcanvas', () => updateNavigationIcon(false));
         navigation.addEventListener('hidden.bs.offcanvas', () => updateNavigationIcon(false));
+
+        const desktopNavigation = document.querySelector('[data-desktop-navigation]');
+        const desktopViewport = window.matchMedia('(min-width: 992px)');
+        let desktopCollapsed = false;
+        const updateDesktopNavigation = () => {
+            navigation.classList.toggle('desktop-collapsed', desktopCollapsed);
+            navigation.inert = desktopViewport.matches && desktopCollapsed;
+            desktopNavigation.setAttribute('aria-expanded', String(!desktopCollapsed));
+            desktopNavigation.setAttribute('aria-label', desktopCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+            desktopNavigation.querySelector('.hamburger-icon').classList.toggle('is-open', !desktopCollapsed);
+        };
+        desktopNavigation.addEventListener('click', () => {
+            desktopCollapsed = !desktopCollapsed;
+            updateDesktopNavigation();
+        });
+        desktopViewport.addEventListener('change', updateDesktopNavigation);
 
         document.querySelectorAll('[data-flash-toast]').forEach((element) => {
             bootstrap.Toast.getOrCreateInstance(element).show();

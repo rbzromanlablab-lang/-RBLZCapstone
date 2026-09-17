@@ -65,9 +65,9 @@
     <div class="mb-3 text-uppercase small fw-semibold text-white-50">Navigation</div>
 
     <ul class="nav nav-pills flex-column gap-2">
-        @foreach ($links as $link)
+        @foreach (array_values(array_filter($links, fn ($link) => $link['visible'])) as $link)
             @if ($link['visible'])
-                <li class="nav-item">
+                <li class="nav-item" style="--menu-delay: {{ $loop->index * 35 }}ms;">
                     <a
                         href="{{ $link['url'] }}"
                         class="nav-link {{ request()->url() === $link['url'] ? 'active' : '' }}"
