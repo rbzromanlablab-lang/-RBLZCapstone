@@ -24,11 +24,11 @@ For Gmail email sending, replace `MAIL_MAILER=log` with these service environmen
 
 ```dotenv
 MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=yourgmail@gmail.com
 MAIL_PASSWORD=your_google_app_password
-MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=yourgmail@gmail.com
-MAIL_FROM_NAME="${APP_NAME}"
+MAIL_FROM_NAME=PARDS
 ```
