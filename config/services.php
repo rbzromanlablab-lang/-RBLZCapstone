@@ -39,4 +39,9 @@ return [
         'expire' => env('REGISTRATION_OTP_EXPIRE', 10),
     ],
 
+    'brevo' => [
+        'api_key' => env('BREVO_API_KEY'),
+        'endpoint' => env('BREVO_API_ENDPOINT', 'https://api.brevo.com/v3/smtp/email'),
+    ],
+
 ];

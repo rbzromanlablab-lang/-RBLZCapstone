@@ -3,21 +3,25 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Mail\RegistrationOtpMail;
 use App\Models\User;
+use App\Services\RegistrationOtpSender;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 class RegisteredUserController extends Controller
 {
     private const PENDING_REGISTRATION_SESSION_KEY = 'auth.pending_registration';
+
+    public function __construct(private readonly RegistrationOtpSender $otpSender)
+    {
+    }
 
     public function create(): View
     {
@@ -34,7 +38,15 @@ class RegisteredUserController extends Controller
         $validated = $this->registrationValidator($request->all())->validate();
         $pendingRegistration = $this->buildPendingRegistrationPayload($validated);
 
-        $this->sendOtp($request, $pendingRegistration);
+        try {
+            $this->sendOtp($request, $pendingRegistration);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()
+                ->withErrors(['email' => 'We could not send the OTP right now. Please try again shortly.'])
+                ->withInput($request->except(['password', 'password_confirmation']));
+        }
 
         return redirect()
             ->route('register.verify')
@@ -138,7 +150,15 @@ class RegisteredUserController extends Controller
                 ]);
         }
 
-        $this->sendOtp($request, $pendingRegistration);
+        try {
+            $this->sendOtp($request, $pendingRegistration);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()->withErrors([
+                'otp' => 'We could not resend the OTP right now. Please try again shortly.',
+            ]);
+        }
 
         return redirect()
             ->route('register.verify')
@@ -180,13 +200,11 @@ class RegisteredUserController extends Controller
         $otpCode = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $expiresAt = now()->addMinutes($this->otpExpireMinutes());
 
-        Mail::to($pendingRegistration['email'])->send(
-            new RegistrationOtpMail(
-                otpCode: $otpCode,
-                name: $pendingRegistration['name'],
-                email: $pendingRegistration['email'],
-                expiresInMinutes: $this->otpExpireMinutes()
-            )
+        $this->otpSender->send(
+            email: $pendingRegistration['email'],
+            name: $pendingRegistration['name'],
+            otpCode: $otpCode,
+            expiresInMinutes: $this->otpExpireMinutes()
         );
 
         $request->session()->put(self::PENDING_REGISTRATION_SESSION_KEY, [

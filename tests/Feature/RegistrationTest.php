@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Mail\RegistrationOtpMail;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -35,6 +37,35 @@ class RegistrationTest extends TestCase
             'email' => 'alvinbaguinon27@gmail.com',
             'role' => User::ROLE_TEACHER,
         ]);
+    }
+
+    public function test_registration_can_send_otp_through_the_brevo_api(): void
+    {
+        Mail::fake();
+        Http::fake([
+            'api.brevo.com/*' => Http::response(['messageId' => 'test-message-id'], 201),
+        ]);
+        config()->set('services.brevo.api_key', 'test-api-key');
+        config()->set('mail.from.address', 'sender@example.com');
+        config()->set('mail.from.name', 'PARDS');
+
+        $response = $this->post('/register', [
+            'name' => 'API User',
+            'email' => 'api.user@gmail.com',
+            'role' => User::ROLE_TEACHER,
+            'password' => 'secret123',
+            'password_confirmation' => 'secret123',
+        ]);
+
+        $response->assertRedirect('/register/verify');
+        Mail::assertNothingSent();
+        Http::assertSent(function (Request $request): bool {
+            return $request->url() === 'https://api.brevo.com/v3/smtp/email'
+                && $request->hasHeader('api-key', 'test-api-key')
+                && $request['sender']['email'] === 'sender@example.com'
+                && $request['to'][0]['email'] === 'api.user@gmail.com'
+                && $request['subject'] === 'Your PARDS Registration OTP Code';
+        });
     }
 
     public function test_user_can_complete_registration_with_a_valid_otp(): void

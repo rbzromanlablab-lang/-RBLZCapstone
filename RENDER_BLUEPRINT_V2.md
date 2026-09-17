@@ -20,15 +20,13 @@ APP_URL=https://rblz-capstone-v2.onrender.com
 
 After the first deploy, open the web service settings and check the actual Render URL. If Render gives a slightly different URL, update `APP_URL` to match it and redeploy.
 
-For Gmail email sending, replace `MAIL_MAILER=log` with these service environment variables:
+Render Free blocks outbound SMTP ports. Use the Brevo HTTPS API for registration OTP email:
 
 ```dotenv
-MAIL_MAILER=smtp
-MAIL_SCHEME=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=yourgmail@gmail.com
-MAIL_PASSWORD=your_google_app_password
+MAIL_MAILER=log
 MAIL_FROM_ADDRESS=yourgmail@gmail.com
 MAIL_FROM_NAME=PARDS
+BREVO_API_KEY=your_brevo_api_key
 ```
+
+Register and verify `MAIL_FROM_ADDRESS` as a sender in Brevo before deploying the API key.
