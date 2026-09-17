@@ -52,6 +52,7 @@
 
     <div class="col-md-6">
         <label for="employee_number" class="form-label">Employee Number</label>
+        <div class="form-text mb-2">Enter the official school-issued employee ID. It must be unique and will appear automatically on accountability forms.</div>
         <input
             type="text"
             id="employee_number"

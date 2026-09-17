@@ -19,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', Rule::in(User::roles())],
-            'employee_number' => ['nullable', 'string', 'max:100'],
+            'employee_number' => ['nullable', 'string', 'max:100', Rule::unique('teachers', 'employee_number'), Rule::unique('staff', 'employee_number')],
             'department' => ['nullable', 'string', 'max:255'],
             'subject_area' => ['nullable', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],

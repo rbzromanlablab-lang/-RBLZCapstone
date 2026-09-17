@@ -13,6 +13,23 @@ class UserManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_employee_numbers_are_unique_across_staff_and_teachers_but_can_be_kept_on_update(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $staff = User::factory()->create(['role' => User::ROLE_STAFF, 'email' => 'employee@gmail.com']);
+        $staff->syncRoleProfile(['employee_number' => 'EMP-001']);
+        $this->actingAs($admin)->post('/users', [
+            'name' => 'New Teacher', 'email' => 'newteacher@gmail.com', 'role' => 'teacher',
+            'employee_number' => 'EMP-001', 'password' => 'password123', 'password_confirmation' => 'password123',
+        ])->assertSessionHasErrors('employee_number');
+
+        $this->put('/users/'.$staff->id, [
+            'name' => $staff->name, 'email' => $staff->email, 'role' => 'staff',
+            'employee_number' => 'EMP-001', 'is_active' => 1,
+        ])->assertSessionHasNoErrors()->assertRedirect('/users');
+        $this->assertDatabaseHas('staff', ['user_id' => $staff->id, 'employee_number' => 'EMP-001']);
+    }
+
     public function test_admin_can_delete_a_user_with_active_assignments_and_restore_inventory(): void
     {
         $admin = User::factory()->create([

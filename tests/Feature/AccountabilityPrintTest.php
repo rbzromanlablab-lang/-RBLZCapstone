@@ -10,6 +10,31 @@ class AccountabilityPrintTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_form_uses_employee_record_and_active_admin_name(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $teacher->syncRoleProfile(['employee_number' => 'EMP-001']);
+        $teacher->refresh();
+        User::factory()->create(['role' => 'admin', 'name' => 'Active Verifier']);
+        User::factory()->create(['role' => 'admin', 'is_active' => false, 'name' => 'Inactive Verifier']);
+
+        $this->actingAs($teacher)->get('/teacher/my-properties/print')->assertOk()
+            ->assertSee('EMP-001')->assertSee('Active Verifier')->assertDontSee('Inactive Verifier');
+    }
+
+    public function test_multiple_admins_require_explicit_selection_and_reject_non_admins(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($teacher)->get('/teacher/my-properties/print')->assertOk()
+            ->assertSee('Administrator not selected')->assertSee('Not yet provided');
+        $this->get('/teacher/my-properties/print?verified_by='.$admin->id)->assertOk()
+            ->assertViewHas('verifyingAdmin', fn ($verifier) => $verifier->is($admin));
+        $this->get('/teacher/my-properties/print?verified_by='.$teacher->id)
+            ->assertSessionHasErrors('verified_by');
+    }
+
     public function test_print_form_has_signatures_without_app_navigation(): void
     {
         $teacher = User::factory()->create(['role' => 'teacher']);
@@ -17,7 +42,7 @@ class AccountabilityPrintTest extends TestCase
             ->assertOk()
             ->assertSee($teacher->name)
             ->assertSee('Signature over Printed Name of Accountable End-User')
-            ->assertSee('Signature over Printed Name of Supply / Property Officer')
+            ->assertSee('Signature over Printed Name of Administrator')
             ->assertSee('No assigned properties found.')
             ->assertDontSee('mobile-app-header')
             ->assertDontSee('sidebar-shell')

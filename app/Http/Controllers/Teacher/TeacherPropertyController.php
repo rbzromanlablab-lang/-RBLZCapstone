@@ -10,6 +10,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class TeacherPropertyController extends Controller
 {
@@ -88,6 +90,13 @@ class TeacherPropertyController extends Controller
     public function print(Request $request): View|Response
     {
         $teacher = $request->user();
+        $request->validate([
+            'verified_by' => ['nullable', 'integer', Rule::exists('users', 'id')->where('role', User::ROLE_ADMIN)->where('is_active', true)],
+        ]);
+        $admins = User::query()->where('role', User::ROLE_ADMIN)->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $verifyingAdmin = $request->filled('verified_by')
+            ? $admins->firstWhere('id', $request->integer('verified_by'))
+            : ($admins->count() === 1 ? $admins->first() : null);
 
         $properties = Property::query()
             ->with([
@@ -113,6 +122,8 @@ class TeacherPropertyController extends Controller
             'teacher' => $teacher,
             'printedAt' => now(),
             'isPdf' => $request->boolean('pdf'),
+            'admins' => $admins,
+            'verifyingAdmin' => $verifyingAdmin,
         ];
 
         if ($data['isPdf']) {

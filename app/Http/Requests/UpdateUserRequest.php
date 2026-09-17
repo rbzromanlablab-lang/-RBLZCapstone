@@ -21,7 +21,7 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'role' => ['required', Rule::in(User::roles())],
-            'employee_number' => ['nullable', 'string', 'max:100'],
+            'employee_number' => ['nullable', 'string', 'max:100', Rule::unique('teachers', 'employee_number')->ignore($userId, 'user_id'), Rule::unique('staff', 'employee_number')->ignore($userId, 'user_id')],
             'department' => ['nullable', 'string', 'max:255'],
             'subject_area' => ['nullable', 'string', 'max:255'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
