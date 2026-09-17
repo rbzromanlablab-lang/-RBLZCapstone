@@ -99,6 +99,8 @@ class PropertyRequestController extends Controller
                         throw ValidationException::withMessages(['property_id' => 'Select the property approved by the admin for this request.']);
                     }
                     $assignment = app(RequestAssignmentService::class)->assign($record, $request->integer('property_id'), $request->user());
+                    $assignment->update(['department' => $request->input('department')]);
+                    app(\App\Services\AssignmentSerialService::class)->apply($assignment, $request->input('serial_numbers'));
                     $record->update(['status' => PropertyRequestRecord::STATUS_FULFILLED, 'assignment_id' => $assignment->id, 'selected_property_id' => $assignment->property_id]);
                     return;
                 }
@@ -132,10 +134,10 @@ class PropertyRequestController extends Controller
         return redirect()
             ->route('property-requests.show', $propertyRequest)
             ->with('success', match ($request->input('status')) {
-                PropertyRequestRecord::STATUS_REVIEWED => 'Request forwarded to the admin for approval.',
-                PropertyRequestRecord::STATUS_APPROVED => 'Request approved. Staff can now assign the available property.',
+                PropertyRequestRecord::STATUS_REVIEWED => 'Confirmation saved successfully. Request forwarded to the admin for approval.',
+                PropertyRequestRecord::STATUS_APPROVED => 'Confirmation saved successfully. Request approved for staff assignment.',
                 PropertyRequestRecord::STATUS_FULFILLED => 'Property assigned successfully. The receiving receipt is ready to print.',
-                default => 'Request status updated.',
+                default => 'Confirmation saved successfully. Request status updated.',
             });
     }
 

@@ -88,6 +88,9 @@
                             <label for="response_notes" class="form-label">{{ $canForward ? 'Staff review notes' : 'Admin notes / reason' }}</label>
                             <textarea id="response_notes" name="response_notes" class="form-control" rows="3" maxlength="3000">{{ old('response_notes') }}</textarea>
                         @endunless
+                        @if ($canAssign)
+                            @include('assignments.partials.department-serials')
+                        @endif
                         <button class="btn btn-primary w-100 mt-3" type="submit">{{ $canForward ? 'Forward to Admin' : ($canAssign ? 'Confirm Assignment and Create Receipt' : 'Save Admin Decision') }}</button>
                     </form>
                 @else

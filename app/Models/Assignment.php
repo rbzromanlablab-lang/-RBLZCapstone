@@ -26,6 +26,7 @@ class Assignment extends Model
         'date_assigned',
         'expected_return_date',
         'location',
+        'department',
         'location_id',
         'assigned_at',
         'returned_at',

@@ -115,6 +115,7 @@ class AssignmentController extends Controller
                 'quantity_assigned' => $requestedQuantity,
                 'date_assigned' => $request->date('date_assigned'),
                 'location' => $request->input('location'),
+                'department' => $request->input('department'),
                 'location_id' => Location::resolveId($request->input('location')),
                 'assigned_at' => $request->date('date_assigned'),
                 'remarks' => $request->input('remarks'),
@@ -122,6 +123,7 @@ class AssignmentController extends Controller
             ]);
 
             $this->assignPropertyUnits($property, $assignment, $requestedQuantity);
+            app(\App\Services\AssignmentSerialService::class)->apply($assignment, $request->input('serial_numbers'));
             $property->decrement('quantity', $requestedQuantity);
             $property->refresh();
             $property->syncInventoryStatus();
@@ -238,11 +240,13 @@ class AssignmentController extends Controller
                 'quantity_assigned' => $requestedQuantity,
                 'date_assigned' => $request->date('date_assigned'),
                 'location' => $request->input('location'),
+                'department' => $request->input('department'),
                 'location_id' => Location::resolveId($request->input('location')),
                 'assigned_at' => $request->date('date_assigned'),
                 'remarks' => $request->input('remarks'),
             ]);
 
+            app(\App\Services\AssignmentSerialService::class)->apply($assignment, $request->input('serial_numbers'));
             $currentProperty->refresh();
             $currentProperty->syncInventoryStatus();
 

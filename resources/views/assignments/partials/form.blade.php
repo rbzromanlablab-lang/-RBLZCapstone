@@ -1,6 +1,9 @@
 @csrf
 
 <div class="row g-4">
+    <div class="col-12">
+        @include('assignments.partials.department-serials')
+    </div>
     <div class="col-md-6">
         <label for="property_id" class="form-label">Property</label>
         <select id="property_id" name="property_id" class="form-select @error('property_id') is-invalid @enderror" required>
@@ -195,6 +198,9 @@
             });
 
             propertySelect.addEventListener('change', syncAvailableQuantity);
+            propertySelect.addEventListener('change', () => {
+                document.getElementById('serial_numbers').value = '';
+            });
             quantityInput.addEventListener('input', syncAvailableQuantity);
 
             syncAssigneeSelects();

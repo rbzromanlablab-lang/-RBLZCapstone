@@ -174,6 +174,10 @@
 
         <section class="meta">
             <div>
+                <div class="label">Department</div>
+                <div class="field">{{ $assignment->department ?: 'Not yet provided' }}</div>
+            </div>
+            <div>
                 <div class="label">Assignment No.</div>
                 <div class="field">#{{ $assignment->id }}</div>
             </div>

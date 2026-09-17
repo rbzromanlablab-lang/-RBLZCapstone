@@ -44,11 +44,13 @@ class PropertyRequestWorkflowTest extends TestCase
         $this->assertSame(3, $property->fresh()->quantity);
         $this->actingAs($staff)->get('/staff/dashboard')->assertSee('admin-approved request(s)');
         $this->get($url)->assertOk()->assertSee('Confirm Assignment and Create Receipt');
-        $this->patch($url.'/status', ['status' => 'fulfilled', 'property_id' => $property->id])
+        $this->patch($url.'/status', ['status' => 'fulfilled', 'property_id' => $property->id, 'department' => 'ICT Department', 'serial_numbers' => "PROJECTOR-A\nPROJECTOR-B"])
             ->assertSessionHasNoErrors()->assertRedirect($url);
         $assignment = Assignment::firstOrFail();
         $this->assertSame($teacher->id, $assignment->teacher_id);
         $this->assertSame($staff->id, $assignment->assigned_by);
+        $this->assertSame('ICT Department', $assignment->department);
+        $this->assertSame(['PROJECTOR-A', 'PROJECTOR-B'], $assignment->propertyUnits()->orderBy('id')->pluck('serial_number')->all());
         $this->assertSame(2, $assignment->propertyUnits()->count());
         $this->assertSame(1, $property->fresh()->quantity);
         $this->assertSame($admin->id, $record->fresh()->processed_by);

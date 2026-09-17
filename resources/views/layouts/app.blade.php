@@ -212,6 +212,21 @@
             box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
         }
 
+        @keyframes confirmation-appear {
+            from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes confirmation-check {
+            from { transform: scale(0.6); }
+            to { transform: scale(1); }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .flash-toast.show { animation: confirmation-appear 280ms ease-out; }
+            .flash-toast.show .confirmation-check { display: inline-block; animation: confirmation-check 350ms ease-out; }
+        }
+
         @media (max-width: 991.98px) {
             .sidebar-shell {
                 --bs-offcanvas-width: min(320px, 88vw);
@@ -357,11 +372,11 @@
                     aria-live="assertive"
                     aria-atomic="true"
                     data-flash-toast
-                    data-bs-delay="3500"
+                    data-bs-delay="5500"
                 >
                     <div class="d-flex">
                         <div class="toast-body">
-                            <strong class="d-block mb-1">Success</strong>
+                            <strong class="d-block mb-1"><i class="bi bi-check-circle-fill confirmation-check me-2" aria-hidden="true"></i>Success</strong>
                             {{ session('success') }}
                         </div>
                         <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>

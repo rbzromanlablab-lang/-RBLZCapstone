@@ -30,6 +30,10 @@
         <div class="col-lg-8">
             <div class="dashboard-card p-4 h-100">
                 <h3 class="h5 mb-4">Assignment Information</h3>
+                <div class="border rounded-4 p-3 mb-3">
+                    <div class="text-muted small">Department</div>
+                    <div class="fw-semibold">{{ $assignment->department ?: 'Not yet provided' }}</div>
+                </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
