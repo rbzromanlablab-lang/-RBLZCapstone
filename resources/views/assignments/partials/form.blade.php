@@ -13,9 +13,10 @@
                     value="{{ $property->id }}"
                     data-assignable-quantity="{{ $property->assignable_quantity }}"
                     data-department="{{ $property->department }}"
+                    data-serial-number="{{ $property->serial_number }}"
                     @selected(old('property_id', $assignment->property_id) == $property->id)
                 >
-                    {{ $property->property_code }}{{ $property->serial_number ? ' / SN: '.$property->serial_number : '' }} - {{ $property->property_name }}
+                    {{ $property->property_code }} - {{ $property->property_name }}
                 </option>
             @endforeach
         </select>
@@ -23,6 +24,13 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
         <div class="form-text" id="property-availability-text"></div>
+    </div>
+
+    <div class="col-md-6">
+        <label for="property_serial_number" class="form-label">Serial Number (Manage Property)</label>
+        <input type="text" id="property_serial_number" class="form-control"
+            value="{{ $properties->firstWhere('id', old('property_id', $assignment->property_id))?->serial_number }}"
+            readonly>
     </div>
 
     @if (!$assignment->exists && $selectedAssignee)
@@ -53,7 +61,6 @@
         @error('teacher_id')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">Use this if the property will be assigned to a teacher.</div>
     </div>
 
     <div class="col-md-6">
@@ -74,7 +81,6 @@
         @error('staff_id')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">Leave this blank if you selected a teacher above.</div>
     </div>
     @endif
 
@@ -147,6 +153,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const propertySelect = document.getElementById('property_id');
+            const propertySerialNumber = document.getElementById('property_serial_number');
             const teacherSelect = document.querySelector('[data-assignee-select="teacher"]');
             const staffSelect = document.querySelector('[data-assignee-select="staff"]');
             const quantityInput = document.getElementById('quantity_assigned');
@@ -173,6 +180,7 @@
 
             const syncAvailableQuantity = () => {
                 const selectedOption = propertySelect.options[propertySelect.selectedIndex];
+                propertySerialNumber.value = selectedOption?.dataset.serialNumber || '';
                 const assignableQuantity = Number(selectedOption?.dataset.assignableQuantity ?? 0);
 
                 if (!propertySelect.value) {
