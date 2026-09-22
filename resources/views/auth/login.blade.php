@@ -191,14 +191,30 @@
         }
 
         .create-account-link {
-            color: var(--pards-ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 9px 20px;
+            border: 2px solid var(--pards-primary);
+            border-radius: 999px;
+            color: #fff;
+            background: var(--pards-primary);
+            font-size: 17px;
             font-weight: 800;
             text-decoration: none;
             white-space: nowrap;
+            box-shadow: 0 7px 14px rgba(45, 32, 120, .2);
+            transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
         }
 
-        .create-account-link:hover {
-            text-decoration: underline;
+        .create-account-link:hover,
+        .create-account-link:focus-visible {
+            color: #fff;
+            background: var(--pards-primary-dark);
+            border-color: var(--pards-primary-dark);
+            box-shadow: 0 9px 18px rgba(45, 32, 120, .28);
+            transform: translateY(-1px);
         }
 
         .consent-check {
@@ -276,7 +292,7 @@
             <img src="{{ asset('ANHS LOGO.jpg') }}" alt="Abanon National High School logo" class="school-logo">
             <h1 class="school-name">Abanon National High School</h1>
             <p class="school-location">San Carlos City, Pangasinan</p>
-            <p class="portal-title">School Records and Access Portal</p>
+            <p class="portal-title">PARDS: Property Accountability Records and Disposal System</p>
         </header>
 
         <section class="login-card" aria-labelledby="login-title">
@@ -353,7 +369,7 @@
                             <label for="remember" class="form-check-label">Remember me</label>
                         </div>
 
-                        <a href="{{ route('register') }}" class="create-account-link">Create account</a>
+                        <a href="{{ route('register') }}" class="create-account-link">Create Account</a>
                     </div>
 
                     <div class="form-check consent-check">
