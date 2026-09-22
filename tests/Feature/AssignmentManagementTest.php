@@ -642,12 +642,18 @@ class AssignmentManagementTest extends TestCase
         $teacherResponse = $this->actingAs($admin)->get('/assignments/create?teacher_id='.$teacher->id);
         $teacherResponse->assertOk();
         $teacherResponse->assertSee('Assigning To '.$teacher->name);
-        $teacherResponse->assertSee('option value="'.$teacher->id.'" selected', false);
+        $teacherResponse->assertSee('name="teacher_id" value="'.$teacher->id.'"', false);
+        $teacherResponse->assertSee('value="'.$teacher->name.'" readonly', false);
+        $teacherResponse->assertDontSee('<option value="">Select teacher</option>', false);
+        $teacherResponse->assertDontSee('<option value="">Select staff member</option>', false);
+        $teacherResponse->assertDontSee('<option value="'.$staff->id.'"', false);
 
         $staffResponse = $this->actingAs($admin)->get('/assignments/create?staff_id='.$staff->id);
         $staffResponse->assertOk();
         $staffResponse->assertSee('Assigning To '.$staff->name);
-        $staffResponse->assertSee('option value="'.$staff->id.'" selected', false);
+        $staffResponse->assertSee('name="staff_id" value="'.$staff->id.'"', false);
+        $staffResponse->assertSee('value="'.$staff->name.'" readonly', false);
+        $staffResponse->assertDontSee('name="teacher_id"', false);
     }
 
     public function test_assignment_pages_show_property_code_for_assigned_items(): void

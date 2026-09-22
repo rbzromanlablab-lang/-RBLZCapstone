@@ -25,6 +25,16 @@
         <div class="form-text" id="property-availability-text"></div>
     </div>
 
+    @if (!$assignment->exists && $selectedAssignee)
+        <div class="col-md-6">
+            <label for="selected_assignee" class="form-label">{{ $selectedAssignee->isTeacher() ? 'Teacher' : 'Staff' }}</label>
+            <input type="text" id="selected_assignee" class="form-control" value="{{ $selectedAssignee->name }}" readonly>
+            <div class="form-text text-break">{{ $selectedAssignee->email }}</div>
+            <input type="hidden" name="{{ $selectedAssignee->isTeacher() ? 'teacher_id' : 'staff_id' }}" value="{{ $selectedAssignee->id }}">
+            @error('teacher_id')<div class="text-danger small">{{ $message }}</div>@enderror
+            @error('staff_id')<div class="text-danger small">{{ $message }}</div>@enderror
+        </div>
+    @else
     <div class="col-md-6">
         <label for="teacher_id" class="form-label">Teacher</label>
         <select
@@ -66,6 +76,7 @@
         @enderror
         <div class="form-text">Leave this blank if you selected a teacher above.</div>
     </div>
+    @endif
 
     <div class="col-md-6">
         <label for="quantity_assigned" class="form-label">Quantity Assigned</label>
@@ -142,11 +153,12 @@
             const propertyAvailabilityText = document.getElementById('property-availability-text');
             const quantityLimitText = document.getElementById('quantity-limit-text');
 
-            if (!teacherSelect || !staffSelect || !propertySelect || !quantityInput || !propertyAvailabilityText || !quantityLimitText) {
+            if (!propertySelect || !quantityInput || !propertyAvailabilityText || !quantityLimitText) {
                 return;
             }
 
             const syncAssigneeSelects = () => {
+                if (!teacherSelect || !staffSelect) return;
                 const hasTeacher = teacherSelect.value !== '';
                 const hasStaff = staffSelect.value !== '';
 
@@ -182,7 +194,7 @@
                 }
             };
 
-            teacherSelect.addEventListener('change', () => {
+            teacherSelect?.addEventListener('change', () => {
                 if (teacherSelect.value !== '') {
                     staffSelect.value = '';
                 }
@@ -190,7 +202,7 @@
                 syncAssigneeSelects();
             });
 
-            staffSelect.addEventListener('change', () => {
+            staffSelect?.addEventListener('change', () => {
                 if (staffSelect.value !== '') {
                     teacherSelect.value = '';
                 }

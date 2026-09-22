@@ -313,17 +313,18 @@ class AssignmentController extends Controller
         ?User $selectedAssignee = null,
     ): array
     {
+        $fixedAssignee = !$assignment->exists && $selectedAssignee !== null;
         return [
             'assignment' => $assignment,
             'properties' => $this->assignmentProperties($assignment),
             'selectedTeacherId' => $selectedTeacherId,
             'selectedStaffId' => $selectedStaffId,
             'selectedAssignee' => $selectedAssignee,
-            'teachers' => User::query()
+            'teachers' => $fixedAssignee ? collect() : User::query()
                 ->where('role', User::ROLE_TEACHER)
                 ->orderBy('name')
                 ->get(),
-            'staffMembers' => User::query()
+            'staffMembers' => $fixedAssignee ? collect() : User::query()
                 ->where('role', User::ROLE_STAFF)
                 ->orderBy('name')
                 ->get(),
