@@ -11,6 +11,15 @@ class AjaxFormSubmissionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_redirect_with_session_error_bag_returns_ajax_validation_error(): void
+    {
+        $this->withHeaders($this->ajaxHeaders())
+            ->post('/register/verify', ['otp' => '123456'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('email')
+            ->assertJsonPath('message', 'Your registration OTP session has expired. Please register again.');
+    }
+
     private function ajaxHeaders(): array
     {
         return [
