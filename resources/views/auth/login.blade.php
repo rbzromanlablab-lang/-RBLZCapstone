@@ -406,5 +406,6 @@
             });
         });
     </script>
+    @include('partials.ajax-forms')
 </body>
 </html>

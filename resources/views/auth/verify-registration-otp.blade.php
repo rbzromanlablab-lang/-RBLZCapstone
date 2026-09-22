@@ -71,5 +71,6 @@
             </div>
         </div>
     </div>
+    @include('partials.ajax-forms')
 </body>
 </html>

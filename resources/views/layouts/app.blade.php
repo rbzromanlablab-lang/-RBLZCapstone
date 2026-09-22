@@ -452,5 +452,6 @@
         });
     </script>
     @stack('scripts')
+    @include('partials.ajax-forms')
 </body>
 </html>

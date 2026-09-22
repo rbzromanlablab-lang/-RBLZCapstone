@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
 
@@ -43,9 +44,9 @@ class RegisteredUserController extends Controller
         } catch (Throwable $exception) {
             report($exception);
 
-            return back()
-                ->withErrors(['email' => 'We could not send the OTP right now. Please try again shortly.'])
-                ->withInput($request->except(['password', 'password_confirmation']));
+            throw ValidationException::withMessages([
+                'email' => 'We could not send the OTP right now. Please try again shortly.',
+            ]);
         }
 
         return redirect()
@@ -89,17 +90,15 @@ class RegisteredUserController extends Controller
         ]);
 
         if (now()->greaterThan($pendingRegistration['otp_expires_at'])) {
-            return back()
-                ->withErrors([
-                    'otp' => 'The OTP has expired. Click resend to get a new code.',
-                ]);
+            throw ValidationException::withMessages([
+                'otp' => 'The OTP has expired. Click resend to get a new code.',
+            ]);
         }
 
         if (! Hash::check($validated['otp'], $pendingRegistration['otp_hash'])) {
-            return back()
-                ->withErrors([
-                    'otp' => 'The OTP you entered is incorrect.',
-                ]);
+            throw ValidationException::withMessages([
+                'otp' => 'The OTP you entered is incorrect.',
+            ]);
         }
 
         if (User::query()->where('email', $pendingRegistration['email'])->exists()) {
@@ -155,7 +154,7 @@ class RegisteredUserController extends Controller
         } catch (Throwable $exception) {
             report($exception);
 
-            return back()->withErrors([
+            throw ValidationException::withMessages([
                 'otp' => 'We could not resend the OTP right now. Please try again shortly.',
             ]);
         }

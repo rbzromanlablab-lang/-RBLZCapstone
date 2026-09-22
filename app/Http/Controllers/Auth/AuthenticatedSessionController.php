@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 class AuthenticatedSessionController extends Controller
@@ -30,19 +31,15 @@ class AuthenticatedSessionController extends Controller
         $user = User::query()->where('email', $credentials['email'])->first();
 
         if ($user && ! $user->is_active) {
-            return back()
-                ->withErrors([
-                    'email' => 'This account has been deactivated. Please contact the administrator.',
-                ])
-                ->onlyInput('email');
+            throw ValidationException::withMessages([
+                'email' => 'This account has been deactivated. Please contact the administrator.',
+            ]);
         }
 
         if (! $user || ! $this->passwordMatches($user, $credentials['password'])) {
-            return back()
-                ->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
-                ])
-                ->onlyInput('email');
+            throw ValidationException::withMessages([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
         }
 
         Auth::login($user, $request->boolean('remember'));
