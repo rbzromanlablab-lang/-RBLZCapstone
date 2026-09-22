@@ -8,7 +8,6 @@
     <div class="dashboard-card p-4">
         <div class="mb-4">
             <h2 class="h4 mb-1">Update User Account</h2>
-            <p class="text-muted mb-0">Edit account details and role assignments.</p>
         </div>
 
         <form method="POST" action="{{ route('users.update', $user) }}">

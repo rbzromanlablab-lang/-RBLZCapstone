@@ -29,7 +29,6 @@
         @error('email')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">All login accounts must use a Gmail address.</div>
     </div>
 
     <div class="col-md-6">
@@ -52,7 +51,6 @@
 
     <div class="col-md-6">
         <label for="employee_number" class="form-label">Employee Number</label>
-        <div class="form-text mb-2">Enter the official school-issued employee ID. It must be unique and will appear automatically on accountability forms.</div>
         <input
             type="text"
             id="employee_number"
@@ -63,7 +61,6 @@
         @error('employee_number')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">Used for staff or teacher profile records in the normalized database tables.</div>
     </div>
 
     <div class="col-md-6">
@@ -78,7 +75,6 @@
         @error('department')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">Used for admin or staff profile records.</div>
     </div>
 
     <div class="col-md-6">
@@ -93,7 +89,6 @@
         @error('subject_area')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">Used for teacher profile records.</div>
     </div>
 
     <div class="col-md-6">
@@ -115,9 +110,6 @@
                 Show
             </button>
         </div>
-        @if ($user->exists)
-            <div class="form-text">Leave blank if you do not want to change the password.</div>
-        @endif
         @error('password')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -156,7 +148,6 @@
             >
             <label for="is_active" class="form-check-label">Active account</label>
         </div>
-        <div class="form-text">Inactive users cannot log in, but their records stay in the system.</div>
     </div>
 </div>
 

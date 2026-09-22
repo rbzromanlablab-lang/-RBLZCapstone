@@ -77,8 +77,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <div id="selectionMessage" class="alert alert-info mt-3" role="status" aria-live="polite">Select an item matching the requested property.</div>
-                                <p class="small text-muted">Approval does not reserve stock. Availability is checked again when staff assigns the property.</p>
+                                <div id="selectionMessage" class="alert alert-info mt-3" role="status" aria-live="polite" hidden></div>
                                 @if ($canAssign && $properties->isEmpty())
                                     <div class="alert alert-warning">The approved property is no longer available. Ask the admin to mark this request as awaiting stock or approve a replacement.</div>
                                 @endif
@@ -94,7 +93,7 @@
                         <button class="btn btn-primary w-100 mt-3" type="submit">{{ $canForward ? 'Forward to Admin' : ($canAssign ? 'Confirm Assignment and Create Receipt' : 'Save Admin Decision') }}</button>
                     </form>
                 @else
-                    <p class="text-muted mb-0">{{ $propertyRequest->status_label }}. {{ $isStaff && $propertyRequest->status === 'awaiting_stock' ? 'Update inventory when stock arrives; the admin can then approve this request.' : 'No action is required from you at this stage.' }}</p>
+                    <p class="text-muted mb-0">{{ $propertyRequest->status_label }}</p>
                 @endif
             </div>
         </div>
@@ -115,9 +114,11 @@
                 selection.disabled = !needsProperty;
                 document.getElementById('propertySelection').hidden = !needsProperty;
                 const option = selection.selectedOptions[0];
-                document.getElementById('selectionMessage').textContent = option?.value
-                    ? option.dataset.name + ': ' + option.dataset.stock + ' available. Requested quantity: {{ $propertyRequest->requested_quantity }}. Please confirm this matches the request.'
-                    : 'Select an item matching the requested property.';
+                const selectionMessage = document.getElementById('selectionMessage');
+                selectionMessage.hidden = !option?.value;
+                selectionMessage.textContent = option?.value
+                    ? option.dataset.name + ': ' + option.dataset.stock + ' available. Requested quantity: {{ $propertyRequest->requested_quantity }}.'
+                    : '';
             }
             if (notes) notes.required = ['rejected', 'awaiting_stock'].includes(decision.value);
         };

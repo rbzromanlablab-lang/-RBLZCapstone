@@ -12,7 +12,6 @@
                 <div class="border rounded-4 bg-white p-4 mb-3">
                     {!! $qrSvg !!}
                 </div>
-                <p class="text-muted small mb-4">Scan this QR code to read the property owner details immediately on your phone.</p>
 
                 <div class="d-grid gap-2">
                     <a href="{{ route('qr.download', $property) }}" class="btn btn-primary">

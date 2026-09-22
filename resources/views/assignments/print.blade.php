@@ -247,9 +247,6 @@
             </div>
         </section>
 
-        <p class="copy-note">
-            Black-and-white receiving copy. Keep this signed document with the property accountability records.
-        </p>
     </main>
 </body>
 </html>

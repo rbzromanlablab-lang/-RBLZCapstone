@@ -9,7 +9,6 @@
         <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
             <div>
                 <h2 class="h4 mb-1">Assigned Property Records</h2>
-                <p class="text-muted mb-0">These are the property items currently assigned under your accountability.</p>
             </div>
             <a href="{{ route('teacher.properties.print') }}" class="btn btn-outline-primary">
                 <i class="bi bi-printer me-2"></i>Print My Accountabilities

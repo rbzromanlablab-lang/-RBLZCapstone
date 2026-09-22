@@ -12,9 +12,6 @@
                     <i class="bi bi-person-workspace me-2"></i>End-User Property Access
                 </span>
                 <h2 class="display-6 fw-semibold mb-3">My Accountabilities</h2>
-                <p class="text-muted mb-0">
-                    View the property items currently assigned under your accountability. This module is read-only for end-users.
-                </p>
             </div>
             <div class="col-lg-4">
                 <div class="rounded-4 p-4 text-white" style="background: linear-gradient(135deg, #183153 0%, #254f7a 100%);">
@@ -125,23 +122,6 @@
                     @endforelse
                 </div>
 
-                <p class="page-section-title mb-1">Access Rules</p>
-                <h3 class="h5 mb-4">End-User Permissions</h3>
-
-                <div class="border rounded-4 p-3 mb-3 bg-light-subtle">
-                    <div class="fw-semibold">View only</div>
-                    <div class="text-muted small">End-users can open only their own accountability records.</div>
-                </div>
-
-                <div class="border rounded-4 p-3 mb-3 bg-light-subtle">
-                    <div class="fw-semibold">Request submission</div>
-                    <div class="text-muted small">End-users can submit property requests for supply office review.</div>
-                </div>
-
-                <div class="border rounded-4 p-3 bg-light-subtle">
-                    <div class="fw-semibold">Protected access</div>
-                    <div class="text-muted small">Only records and requests for the logged-in end-user are shown.</div>
-                </div>
             </div>
         </div>
     </div>

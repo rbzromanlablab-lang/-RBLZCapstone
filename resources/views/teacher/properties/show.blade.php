@@ -110,10 +110,6 @@
                     <div class="fw-semibold">{{ $assignment->assignedBy?->name ?? 'N/A' }}</div>
                 </div>
 
-                <div class="border rounded-4 p-3">
-                    <div class="text-muted small">Read-only Access</div>
-                    <div class="fw-semibold">End-users cannot edit or delete this record.</div>
-                </div>
             </div>
         </div>
     </div>

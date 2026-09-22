@@ -13,7 +13,6 @@
                 <div class="border rounded-4 bg-white p-4 mb-3">
                     {!! $qrSvg !!}
                 </div>
-                <p class="text-muted small mb-4">Scan this QR code to read this exact property piece and accountability details.</p>
 
                 <div class="d-grid gap-2">
                     <a href="{{ route('qr.units.download', $propertyUnit) }}" class="btn btn-primary">

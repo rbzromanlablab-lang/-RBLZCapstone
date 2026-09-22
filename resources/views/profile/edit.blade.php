@@ -7,7 +7,6 @@
 @section('content')
     <div class="dashboard-card p-4 mx-auto" style="max-width: 560px;">
         <h2 class="h4">Profile Picture</h2>
-        <p class="text-muted">Choose a photo for your account. You can change it here anytime.</p>
 
         <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
             @csrf
@@ -22,8 +21,7 @@
             </div>
             <label for="photo" class="form-label">Choose profile picture</label>
             <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/webp"
-                class="form-control @error('photo') is-invalid @enderror" aria-describedby="photoHelp" required>
-            <div id="photoHelp" class="form-text">JPG, PNG or WebP. Maximum 2 MB and 4096 × 4096 pixels.</div>
+                class="form-control @error('photo') is-invalid @enderror" required>
             @error('photo')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror

@@ -8,7 +8,6 @@
     <div class="dashboard-card p-4">
         <div class="mb-4">
             <h2 class="h4 mb-1">Property Unit QR Codes</h2>
-            <p class="text-muted mb-0">Open or download one QR code for each individual property piece.</p>
         </div>
 
         <div class="table-responsive">

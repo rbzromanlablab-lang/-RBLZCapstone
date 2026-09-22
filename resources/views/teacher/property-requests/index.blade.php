@@ -9,7 +9,6 @@
         <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
             <div>
                 <h2 class="h4 mb-1">Property Request History</h2>
-                <p class="text-muted mb-0">Track the status of your submitted property requests.</p>
             </div>
             <a href="{{ route('teacher.property-requests.create') }}" class="btn btn-primary">
                 <i class="bi bi-clipboard-plus me-2"></i>New Request

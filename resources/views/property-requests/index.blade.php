@@ -8,7 +8,6 @@
     <div class="dashboard-card p-4">
         <div class="mb-4">
             <h2 class="h4 mb-1">Teacher Property Requests</h2>
-            <p class="text-muted mb-0">End-user request → Staff review → Admin approval → Staff assignment and receipt.</p>
         </div>
 
         <div class="d-flex flex-wrap gap-2 mb-3">

@@ -8,11 +8,6 @@
     <div class="dashboard-card p-4">
         <div class="mb-4">
             <h2 class="h4 mb-1">{{ $isAdmin ? 'Create Disposal Record' : 'Create Disposal Request' }}</h2>
-            <p class="text-muted mb-0">
-                {{ $isAdmin
-                    ? 'Record the disposal of a property and save it to disposal history.'
-                    : 'Submit a disposal request for admin approval before inventory is updated.' }}
-            </p>
         </div>
 
         <form method="POST" action="{{ route('disposals.store') }}">
@@ -27,11 +22,6 @@
                     <div class="col-12">
                         <div class="alert alert-warning border mb-0">
                             <div class="fw-semibold mb-2">{{ $isAdmin ? 'Assignment Disposal' : 'Assignment Disposal Request' }}</div>
-                            <p class="small text-muted mb-3">
-                                {{ $isAdmin
-                                    ? 'This disposal will deduct from the assigned quantity instead of the available stock quantity.'
-                                    : 'This request will be sent to admin. The assigned quantity will only be updated after approval.' }}
-                            </p>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <div class="small text-muted">Property</div>

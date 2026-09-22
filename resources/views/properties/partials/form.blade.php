@@ -54,9 +54,7 @@
             name="serial_number"
             class="form-control @error('serial_number') is-invalid @enderror"
             value="{{ old('serial_number', $property->serial_number) }}"
-            placeholder="Auto-generated serial number"
         >
-        <div class="form-text">Auto-generated for new records. You may edit this if the item has an actual serial number.</div>
         @error('serial_number')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -90,7 +88,6 @@
         @error('quantity')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        <div class="form-text">Enter the total quantity. Available quantity will decrease automatically when items are assigned.</div>
     </div>
 
     <div class="col-md-4">
@@ -125,7 +122,6 @@
                 data-unit-cost-input
             >
         </div>
-        <div class="form-text">Enter the price for one item.</div>
         @error('unit_cost')
             <div class="invalid-feedback d-block">{{ $message }}</div>
         @enderror
@@ -144,7 +140,6 @@
                 data-total-cost-output
             >
         </div>
-        <div class="form-text">Auto-computed from quantity x unit cost.</div>
     </div>
 
     <div class="col-md-6">
@@ -202,7 +197,6 @@
     <div class="col-12">
         <div class="border-top pt-4 mt-2">
             <h3 class="h6 mb-1">Specifications</h3>
-            <p class="text-muted small mb-0">Record item details, office ownership, and physical location.</p>
         </div>
     </div>
 
@@ -274,7 +268,6 @@
             name="qr_token"
             class="form-control @error('qr_token') is-invalid @enderror"
             value="{{ old('qr_token', $property->qr_token) }}"
-            placeholder="Leave blank to auto-generate"
         >
         @error('qr_token')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -289,7 +282,6 @@
             name="qr_code_path"
             class="form-control @error('qr_code_path') is-invalid @enderror"
             value="{{ old('qr_code_path', $property->qr_code_path) }}"
-            placeholder="Optional file path or generated image path"
         >
         @error('qr_code_path')
             <div class="invalid-feedback">{{ $message }}</div>

@@ -9,7 +9,6 @@
         <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
             <div>
                 <h2 class="h4 mb-1">Returned Property Logs</h2>
-                <p class="text-muted mb-0">Track who received property items and who recorded their return.</p>
             </div>
             <a href="{{ route('assignments.index') }}" class="btn btn-outline-primary">
                 <i class="bi bi-journal-check me-2"></i>View Assignments

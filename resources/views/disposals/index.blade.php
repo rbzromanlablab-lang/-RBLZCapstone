@@ -9,11 +9,6 @@
         <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
             <div>
                 <h2 class="h4 mb-1">{{ $isAdmin ? 'Disposal Records and Requests' : 'My Disposal Requests' }}</h2>
-                <p class="text-muted mb-0">
-                    {{ $isAdmin
-                        ? 'View disposed properties, donation requests, transfers, and other disposal records.'
-                        : 'Track the disposal requests you submitted for admin review.' }}
-                </p>
             </div>
             <a href="{{ route('disposals.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-2"></i>{{ $isAdmin ? 'Record Disposal' : 'Request Disposal' }}
