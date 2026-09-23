@@ -31,10 +31,15 @@ class HandleAjaxFormResponses
             ], 422);
         }
 
+        if ($request->session()->has('error')) {
+            $message = $request->session()->pull('error');
+
+            return new JsonResponse(['message' => $message], 422);
+        }
+
         $message = session('success')
             ?? session('status')
-            ?? session('error')
-            ?? 'Saved successfully.';
+            ?? 'Action completed successfully.';
         $request->session()->forget(['success', 'status', 'error']);
 
         return new JsonResponse([

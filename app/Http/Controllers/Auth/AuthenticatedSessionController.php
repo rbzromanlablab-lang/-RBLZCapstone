@@ -46,10 +46,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if (! $user->profilePhoto()->exists()) {
-            return redirect()->route('profile.edit');
+            return redirect()->route('profile.edit')->with('success', 'Logged in successfully.');
         }
 
-        return redirect()->intended($this->redirectPathByRole($user));
+        return redirect()->intended($this->redirectPathByRole($user))->with('success', 'Logged in successfully.');
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -59,7 +59,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('status', 'Logged out successfully.');
     }
 
     protected function redirectPathByRole(User $user): string

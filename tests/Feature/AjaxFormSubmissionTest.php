@@ -42,7 +42,7 @@ class AjaxFormSubmissionTest extends TestCase
         ]);
 
         $response->assertOk()
-            ->assertJsonPath('message', 'Saved successfully.')
+            ->assertJsonPath('message', 'Logged in successfully.')
             ->assertJsonPath('redirect', route('profile.edit'));
         $this->assertAuthenticatedAs($teacher);
     }
@@ -64,6 +64,40 @@ class AjaxFormSubmissionTest extends TestCase
             ->assertJsonValidationErrors('email')
             ->assertJsonPath('message', 'The provided credentials do not match our records.');
         $this->assertGuest();
+    }
+
+    public function test_ajax_logout_returns_logout_message_and_ends_the_session(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->withHeaders($this->ajaxHeaders())->post('/logout')
+            ->assertOk()
+            ->assertJsonPath('message', 'Logged out successfully.')
+            ->assertJsonPath('redirect', route('login'));
+
+        $this->assertGuest();
+    }
+
+    public function test_regular_logout_keeps_its_confirmation_on_the_login_page(): void
+    {
+        $this->actingAs(User::factory()->create())->post('/logout')
+            ->assertRedirect(route('login'))
+            ->assertSessionHas('status', 'Logged out successfully.');
+
+        $this->assertGuest();
+        $this->get('/login')->assertOk()->assertSee('Logged out successfully.');
+    }
+
+    public function test_refused_ajax_action_returns_error_instead_of_success(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)->withHeaders($this->ajaxHeaders())->delete('/users/'.$admin->id)
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'You cannot delete your own account while logged in.');
+
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
+        $this->assertAuthenticatedAs($admin);
     }
 
     public function test_ajax_validation_exception_returns_inline_field_errors(): void
