@@ -360,6 +360,7 @@
         }
     </style>
     @include('layouts.partials.button-styles')
+    @include('layouts.partials.header-styles')
     @stack('styles')
 </head>
 <body>
