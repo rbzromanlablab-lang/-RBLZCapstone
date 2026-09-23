@@ -45,7 +45,7 @@
                     <div class="col-md-6">
                         <div class="border rounded-4 p-3 h-100">
                             <div class="text-muted small">Serial Number</div>
-                            <div class="fw-semibold">{{ $assignment->property?->serial_number ?: 'N/A' }}</div>
+                            <div class="fw-semibold">{{ $assignment->unit_serial_numbers ?: 'N/A' }}</div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -59,12 +59,6 @@
                         <div class="border rounded-4 p-3 h-100">
                             <div class="text-muted small">Quantity Assigned</div>
                             <div class="fw-semibold">{{ $assignment->quantity_assigned }}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="border rounded-4 p-3 h-100">
-                            <div class="text-muted small">Assigned Serial Numbers</div>
-                            <div class="fw-semibold text-break">{{ $assignment->propertyUnits->pluck('serial_number')->join(', ') ?: 'N/A' }}</div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -114,7 +108,7 @@
                 </div>
                 <div class="border rounded-4 p-3 mb-3">
                     <div class="text-muted small">Serial Number</div>
-                    <div class="fw-semibold">{{ $assignment->property?->serial_number ?: 'N/A' }}</div>
+                    <div class="fw-semibold">{{ $assignment->unit_serial_numbers ?: 'N/A' }}</div>
                 </div>
                 <div class="border rounded-4 p-3 mb-3">
                     <div class="text-muted small">Location</div>

@@ -97,7 +97,7 @@
                     @forelse ($properties as $property)
                         <tr>
                             <td class="fw-semibold">{{ $property->property_code }}</td>
-                            <td>{{ $property->serial_number ?: 'N/A' }}</td>
+                            <td>{{ $property->unit_serial_numbers ?: 'N/A' }}</td>
                             <td>{{ $property->property_name }}</td>
                             <td>{{ $property->category ?: 'N/A' }}</td>
                             <td>{{ $property->tracked_quantity }} {{ $property->unit }}</td>

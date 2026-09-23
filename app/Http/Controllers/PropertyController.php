@@ -12,6 +12,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use App\Services\InventoryUnitService;
 
 class PropertyController extends Controller
 {
@@ -23,7 +25,7 @@ class PropertyController extends Controller
         $conditionStatus = trim((string) $request->string('condition_status'));
         $location = trim((string) $request->string('location'));
 
-        $properties = Property::query()
+        $properties = Property::query()->with('units')
             ->withSum([
                 'assignments as active_quantity_assigned' => fn ($query) => $query->where('status', \App\Models\Assignment::STATUS_ACTIVE),
             ], 'quantity_assigned')
@@ -36,6 +38,7 @@ class PropertyController extends Controller
                         ->where('property_name', 'like', "%{$search}%")
                         ->orWhere('property_code', 'like', "%{$search}%")
                         ->orWhere('serial_number', 'like', "%{$search}%")
+                        ->orWhereHas('units', fn ($units) => $units->where('serial_number', 'like', "%{$search}%"))
                         ->orWhere('brand', 'like', "%{$search}%")
                         ->orWhere('model', 'like', "%{$search}%")
                         ->orWhere('office', 'like', "%{$search}%")
@@ -62,9 +65,7 @@ class PropertyController extends Controller
     public function create(): View
     {
         return view('properties.create', [
-            'property' => new Property([
-                'serial_number' => Property::generateSerialNumber(),
-            ]),
+            'property' => new Property(),
             'statuses' => Property::statuses(),
             'conditionStatuses' => Property::conditionStatuses(),
         ]);
@@ -77,9 +78,12 @@ class PropertyController extends Controller
         $validated['qr_token'] = ($validated['qr_token'] ?? null) ?: (string) Str::uuid();
         $validated['qr_reference'] = $validated['qr_reference'] ?? $validated['qr_token'];
 
-        $property = Property::create($validated);
-        $this->syncAvailablePropertyUnits($property);
-        $this->recordHistory($property, 'created', 'property:'.$property->id, 'Property record created.');
+        $property = DB::transaction(function () use ($validated, $request) {
+            $property = Property::create($validated);
+            app(InventoryUnitService::class)->sync($property, $request->validated('units'));
+            $this->recordHistory($property, 'created', 'property:'.$property->id, 'Property record created.');
+            return $property;
+        });
 
         return redirect()
             ->route('properties.show', $property)
@@ -115,9 +119,13 @@ class PropertyController extends Controller
         $validated['qr_token'] = ($validated['qr_token'] ?? null) ?: $property->qr_token ?: (string) Str::uuid();
         $validated['qr_reference'] = $property->qr_reference ?: $validated['qr_token'];
 
-        $property->update($validated);
-        $this->syncAvailablePropertyUnits($property);
-        $this->recordHistory($property, 'updated', 'property:'.$property->id, 'Property record updated.');
+        DB::transaction(function () use ($property, $validated, $request) {
+            $property = Property::query()->lockForUpdate()->findOrFail($property->id);
+            $property->update($validated);
+            app(InventoryUnitService::class)->sync($property, $request->validated('units'));
+            $property->syncInventoryStatus();
+            $this->recordHistory($property, 'updated', 'property:'.$property->id, 'Property record updated.');
+        });
 
         return redirect()
             ->route('properties.show', $property)
@@ -135,6 +143,7 @@ class PropertyController extends Controller
 
     private function preparePropertyAttributes(array $validated, Request $request, ?Property $property): array
     {
+        unset($validated['units']);
         $validated['category'] = $this->normalizeText($validated['category'] ?? null);
         $validated['brand'] = $this->normalizeText($validated['brand'] ?? null);
         $validated['model'] = $this->normalizeText($validated['model'] ?? null);
@@ -142,7 +151,7 @@ class PropertyController extends Controller
         $validated['department'] = $this->normalizeText($validated['department'] ?? null);
         $validated['location'] = $this->normalizeText($validated['location'] ?? null);
         $validated['serial_number'] = $this->normalizeText($validated['serial_number'] ?? null)
-            ?: Property::generateSerialNumber();
+            ?: $property?->serial_number ?: Property::generateSerialNumber();
         $validated['property_category_id'] = PropertyCategory::resolveId($validated['category']);
         $validated['location_id'] = Location::resolveId($validated['location']);
 
@@ -173,29 +182,4 @@ class PropertyController extends Controller
         ]);
     }
 
-    private function syncAvailablePropertyUnits(Property $property): void
-    {
-        $availableUnits = $property->availableUnits()->orderByDesc('id')->get();
-        $targetAvailableQuantity = (int) $property->quantity;
-
-        if ($availableUnits->count() < $targetAvailableQuantity) {
-            $missingUnits = $targetAvailableQuantity - $availableUnits->count();
-
-            for ($i = 0; $i < $missingUnits; $i++) {
-                $property->units()->create([
-                    'serial_number' => Property::generateSerialNumber(),
-                    'status' => \App\Models\PropertyUnit::STATUS_AVAILABLE,
-                ]);
-            }
-
-            return;
-        }
-
-        if ($availableUnits->count() > $targetAvailableQuantity) {
-            $availableUnits
-                ->take($availableUnits->count() - $targetAvailableQuantity)
-                ->each
-                ->delete();
-        }
-    }
 }

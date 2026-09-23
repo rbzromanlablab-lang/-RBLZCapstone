@@ -101,8 +101,8 @@ class AssignmentController extends Controller
                 'status' => Assignment::STATUS_ACTIVE,
             ]);
 
-            $this->assignPropertyUnits($property, $assignment, $requestedQuantity);
-            app(\App\Services\AssignmentSerialService::class)->apply($assignment, $request->input('serial_numbers'));
+            app(\App\Services\InventoryUnitService::class)->assign($property, $assignment, $requestedQuantity,
+                $request->boolean('select_units') || $request->has('unit_ids') ? $request->input('unit_ids', []) : null);
             $property->decrement('quantity', $requestedQuantity);
             $property->refresh();
             $property->syncInventoryStatus();
@@ -195,7 +195,13 @@ class AssignmentController extends Controller
                 ]);
             }
 
-            if ($currentProperty->id === $targetProperty->id) {
+            if ($request->boolean('select_units') || $request->has('unit_ids')) {
+                $this->releasePropertyUnits($assignment);
+                $currentProperty->increment('quantity', (int) $assignment->quantity_assigned);
+                $targetProperty->refresh();
+                app(\App\Services\InventoryUnitService::class)->assign($targetProperty, $assignment, $requestedQuantity, $request->input('unit_ids', []));
+                $targetProperty->decrement('quantity', $requestedQuantity);
+            } elseif ($currentProperty->id === $targetProperty->id) {
                 $quantityDifference = $requestedQuantity - (int) $assignment->quantity_assigned;
 
                 if ($quantityDifference > 0) {
@@ -225,7 +231,6 @@ class AssignmentController extends Controller
                 'remarks' => $request->input('remarks'),
             ]);
 
-            app(\App\Services\AssignmentSerialService::class)->apply($assignment, $request->input('serial_numbers'));
             $currentProperty->refresh();
             $currentProperty->syncInventoryStatus();
 
@@ -334,6 +339,10 @@ class AssignmentController extends Controller
     private function assignmentProperties(Assignment $assignment)
     {
         return Property::query()
+            ->with(['units' => fn ($query) => $query->where(function ($units) use ($assignment) {
+                $units->where('status', PropertyUnit::STATUS_AVAILABLE);
+                if ($assignment->exists) $units->orWhere('assignment_id', $assignment->id);
+            })->orderBy('id')])
             ->where(function ($query) use ($assignment) {
                 $query->where('quantity', '>', 0);
                 if ($assignment->exists) $query->orWhere('id', $assignment->property_id);
@@ -402,26 +411,7 @@ class AssignmentController extends Controller
 
     private function assignPropertyUnits(Property $property, Assignment $assignment, int $quantity): void
     {
-        $this->ensureAvailablePropertyUnits($property);
-
-        $units = $property->availableUnits()
-            ->lockForUpdate()
-            ->limit($quantity)
-            ->get();
-
-        if ($units->count() < $quantity) {
-            throw ValidationException::withMessages([
-                'quantity_assigned' => 'Only '.$units->count().' item'.($units->count() === 1 ? ' is' : 's are').' available for unit assignment.',
-            ]);
-        }
-
-        PropertyUnit::query()
-            ->whereIn('id', $units->pluck('id'))
-            ->update([
-                'assignment_id' => $assignment->id,
-                'status' => PropertyUnit::STATUS_ASSIGNED,
-                'updated_at' => now(),
-            ]);
+        app(\App\Services\InventoryUnitService::class)->assign($property, $assignment, $quantity);
     }
 
     private function releasePropertyUnits(Assignment $assignment, ?int $quantity = null): void
@@ -451,16 +441,4 @@ class AssignmentController extends Controller
             ]);
     }
 
-    private function ensureAvailablePropertyUnits(Property $property): void
-    {
-        $existingAvailableUnits = $property->availableUnits()->count();
-        $missingUnits = max(0, (int) $property->quantity - $existingAvailableUnits);
-
-        for ($i = 0; $i < $missingUnits; $i++) {
-            $property->units()->create([
-                'serial_number' => Property::generateSerialNumber(),
-                'status' => PropertyUnit::STATUS_AVAILABLE,
-            ]);
-        }
-    }
 }

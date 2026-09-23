@@ -76,7 +76,8 @@
         const showErrors = (form, errors) => {
             let firstField;
             Object.entries(errors || {}).forEach(([name, messages]) => {
-                const selectorName = CSS.escape(name);
+                const fieldName = name.replace(/\.([^\.]+)/g, '[$1]');
+                const selectorName = CSS.escape(fieldName);
                 const field = form.querySelector(`[name="${selectorName}"], [name="${selectorName}[]"]`);
                 if (!field) return;
                 field.classList.add('is-invalid');

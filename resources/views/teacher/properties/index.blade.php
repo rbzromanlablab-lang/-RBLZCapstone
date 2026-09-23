@@ -24,7 +24,6 @@
                         <th>Property Name</th>
                         <th>Category</th>
                         <th>Quantity</th>
-                        <th>Assigned Serials</th>
                         <th>Condition</th>
                         <th>Date Assigned</th>
                         <th class="text-end">Action</th>
@@ -32,23 +31,23 @@
                 </thead>
                 <tbody>
                     @forelse ($properties as $property)
-                        @php($assignment = $property->assignments->first())
+                        @foreach ($property->assignments as $assignment)
                         <tr>
                             <td data-label="Property Code" class="fw-semibold">{{ $property->property_code }}</td>
-                            <td data-label="Serial Number">{{ $property->serial_number ?: 'N/A' }}</td>
+                            <td data-label="Serial Number">{{ $assignment?->unit_serial_numbers ?: 'N/A' }}</td>
                             <td data-label="Property Name">{{ $property->property_name }}</td>
                             <td data-label="Category">{{ $property->category ?: 'N/A' }}</td>
                             <td data-label="Quantity">{{ $assignment?->quantity_assigned ?? 0 }} {{ $property->unit }}</td>
-                            <td data-label="Assigned Serials">{{ $assignment?->propertyUnits?->pluck('serial_number')->join(', ') ?: 'N/A' }}</td>
                             <td data-label="Condition">{{ ucfirst(str_replace('_', ' ', $property->condition_status)) }}</td>
                             <td data-label="Date Assigned">{{ optional($assignment?->date_assigned)->format('F d, Y') }}</td>
                             <td class="text-end record-action">
-                                <a href="{{ route('teacher.properties.show', $property) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                <a href="{{ route('teacher.properties.show', ['property' => $property, 'assignment' => $assignment->id]) }}" class="btn btn-sm btn-outline-primary">View Details</a>
                             </td>
                         </tr>
+                        @endforeach
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted record-empty">No assigned properties found.</td>
+                            <td colspan="8" class="text-center py-5 text-muted record-empty">No assigned properties found.</td>
                         </tr>
                     @endforelse
                 </tbody>

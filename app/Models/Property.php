@@ -50,6 +50,11 @@ class Property extends Model
         'staff_id',
     ];
 
+    public function getUnitSerialNumbersAttribute(): string
+    {
+        return $this->units->pluck('serial_number')->join(', ') ?: (string) $this->serial_number;
+    }
+
     protected function casts(): array
     {
         return [

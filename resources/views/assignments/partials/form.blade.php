@@ -13,7 +13,7 @@
                     value="{{ $property->id }}"
                     data-assignable-quantity="{{ $property->assignable_quantity }}"
                     data-department="{{ $property->department }}"
-                    data-serial-number="{{ $property->serial_number }}"
+                    data-units="{{ $property->units->map(fn ($unit) => ['id' => $unit->id, 'serial_number' => $unit->serial_number])->toJson() }}"
                     @selected(old('property_id', $assignment->property_id) == $property->id)
                 >
                     {{ $property->property_code }} - {{ $property->property_name }}
@@ -26,11 +26,8 @@
         <div class="form-text" id="property-availability-text"></div>
     </div>
 
-    <div class="col-md-6">
-        <label for="property_serial_number" class="form-label">Serial Number (Manage Property)</label>
-        <input type="text" id="property_serial_number" class="form-control"
-            value="{{ $properties->firstWhere('id', old('property_id', $assignment->property_id))?->serial_number }}"
-            readonly>
+    <div class="col-12">
+        @include('assignments.partials.unit-picker', ['selectedUnitIds' => old('unit_ids', $assignment->exists ? $assignment->propertyUnits->pluck('id')->all() : [])])
     </div>
 
     @if (!$assignment->exists && $selectedAssignee)
@@ -153,7 +150,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const propertySelect = document.getElementById('property_id');
-            const propertySerialNumber = document.getElementById('property_serial_number');
             const teacherSelect = document.querySelector('[data-assignee-select="teacher"]');
             const staffSelect = document.querySelector('[data-assignee-select="staff"]');
             const quantityInput = document.getElementById('quantity_assigned');
@@ -180,7 +176,6 @@
 
             const syncAvailableQuantity = () => {
                 const selectedOption = propertySelect.options[propertySelect.selectedIndex];
-                propertySerialNumber.value = selectedOption?.dataset.serialNumber || '';
                 const assignableQuantity = Number(selectedOption?.dataset.assignableQuantity ?? 0);
 
                 if (!propertySelect.value) {
@@ -220,7 +215,6 @@
 
             propertySelect.addEventListener('change', syncAvailableQuantity);
             propertySelect.addEventListener('change', () => {
-                document.getElementById('serial_numbers').value = '';
                 const departmentInput = document.getElementById('department');
                 if (!departmentInput.value.trim()) departmentInput.value = propertySelect.selectedOptions[0]?.dataset.department || '';
             });

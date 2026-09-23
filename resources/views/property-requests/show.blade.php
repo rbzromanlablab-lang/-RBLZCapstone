@@ -70,7 +70,7 @@
                                 <select id="property_id" name="property_id" class="form-select">
                                     <option value="">Choose an inventory item</option>
                                     @foreach ($properties as $property)
-                                        <option value="{{ $property->id }}" data-name="{{ $property->property_name }}" data-stock="{{ $property->quantity }}" data-department="{{ $property->department }}"
+                                        <option value="{{ $property->id }}" data-name="{{ $property->property_name }}" data-units="{{ $property->availableUnits->map(fn ($unit) => ['id' => $unit->id, 'serial_number' => $unit->serial_number])->toJson() }}" data-stock="{{ $property->quantity }}" data-department="{{ $property->department }}"
                                             @disabled($property->quantity < $propertyRequest->requested_quantity)
                                             @selected((string) old('property_id', $propertyRequest->selected_property_id) === (string) $property->id)>
                                             {{ $property->property_name }} - {{ $property->property_code }} ({{ $property->quantity }} available)
@@ -89,6 +89,7 @@
                         @endunless
                         @if ($canAssign)
                             @include('assignments.partials.department-serials')
+                            @include('assignments.partials.unit-picker', ['selectedUnitIds' => old('unit_ids', []), 'requiredUnitCount' => $propertyRequest->requested_quantity])
                         @endif
                         <button class="btn btn-primary w-100 mt-3" type="submit">{{ $canForward ? 'Forward to Admin' : ($canAssign ? 'Confirm Assignment and Create Receipt' : 'Save Admin Decision') }}</button>
                     </form>

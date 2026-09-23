@@ -28,20 +28,25 @@ class AssignmentDepartmentSerialTest extends TestCase
         ];
     }
 
-    public function test_department_and_manual_serials_are_saved_and_printed_and_editable(): void
+    public function test_department_and_selected_inventory_units_are_saved_and_printed(): void
     {
         $data = $this->payload();
-        $data['serial_numbers'] = "LAPTOP-A\nLAPTOP-B";
+        $property = Property::findOrFail($data['property_id']);
+        $units = collect(['LAPTOP-A', 'LAPTOP-B', 'LAPTOP-C', 'LAPTOP-D'])
+            ->map(fn ($serial) => $property->units()->create(['serial_number' => $serial, 'status' => 'available']));
+        $data['unit_ids'] = $units->take(2)->pluck('id')->all();
         $this->post('/assignments', $data)->assertSessionHasNoErrors();
         $assignment = Assignment::firstOrFail();
         $this->assertSame('Science Department', $assignment->department);
         $this->assertSame(['LAPTOP-A', 'LAPTOP-B'], $assignment->propertyUnits()->orderBy('id')->pluck('serial_number')->all());
         $this->get('/assignments/'.$assignment->id.'/print')->assertOk()->assertSee('Science Department')->assertSee('LAPTOP-A');
         $data['department'] = 'Math Department';
-        $data['serial_numbers'] = "LAPTOP-A\nLAPTOP-C";
+        $data['unit_ids'] = [$units[0]->id, $units[2]->id];
         $this->put('/assignments/'.$assignment->id, $data)->assertSessionHasNoErrors();
         $this->assertSame('Math Department', $assignment->fresh()->department);
         $this->assertSame(['LAPTOP-A', 'LAPTOP-C'], $assignment->propertyUnits()->orderBy('id')->pluck('serial_number')->all());
+        $this->assertSame('available', $units[1]->fresh()->status);
+        $this->assertSame('LAPTOP-B', $units[1]->fresh()->serial_number);
     }
 
     public function test_blank_serials_generate_unique_serials_and_retain_them_on_edit(): void

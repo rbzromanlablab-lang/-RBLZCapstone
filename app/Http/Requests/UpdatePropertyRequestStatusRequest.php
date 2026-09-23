@@ -24,7 +24,10 @@ class UpdatePropertyRequestStatusRequest extends FormRequest
             'response_notes' => ['required_if:status,rejected,awaiting_stock', 'nullable', 'string', 'max:3000'],
             'property_id' => ['required_if:status,approved,fulfilled', 'nullable', 'integer', 'exists:properties,id'],
             'department' => ['nullable', 'string', 'max:255'],
-            'serial_numbers' => ['nullable', 'string', 'max:20000'],
+            'serial_numbers' => ['prohibited'],
+            'unit_ids' => ['sometimes', 'array', 'max:1000'],
+            'unit_ids.*' => ['required', 'integer', 'distinct'],
+            'select_units' => ['sometimes', 'boolean'],
         ];
     }
 }

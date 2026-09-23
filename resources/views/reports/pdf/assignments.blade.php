@@ -18,7 +18,7 @@
             @foreach ($assignments as $assignment)
                 <tr>
                     <td>{{ $assignment->property?->property_code }}</td>
-                    <td>{{ $assignment->property?->serial_number ?: 'N/A' }}</td>
+                    <td>{{ $assignment->unit_serial_numbers ?: 'N/A' }}</td>
                     <td>{{ $assignment->property?->property_name }}</td>
                     <td>{{ $assignment->teacher?->name ?: 'N/A' }}</td>
                     <td>{{ $assignment->quantity_assigned }}</td>

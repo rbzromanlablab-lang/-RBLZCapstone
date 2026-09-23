@@ -34,6 +34,11 @@ class Assignment extends Model
         'status',
     ];
 
+    public function getUnitSerialNumbersAttribute(): string
+    {
+        return $this->propertyUnits->pluck('serial_number')->join(', ');
+    }
+
     protected function casts(): array
     {
         return [

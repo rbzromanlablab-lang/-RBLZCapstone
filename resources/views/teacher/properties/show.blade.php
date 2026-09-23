@@ -11,8 +11,8 @@
                 <h2 class="h4 mb-1">{{ $property->property_name }}</h2>
                 <p class="text-muted mb-0">
                     Property Code: {{ $property->property_code }}
-                    @if ($property->serial_number)
-                        | Serial Number: {{ $property->serial_number }}
+                    @if ($assignment?->unit_serial_numbers)
+                        | Serial Number: {{ $assignment?->unit_serial_numbers }}
                     @endif
                 </p>
             </div>
@@ -35,7 +35,7 @@
                     <div class="col-md-6">
                         <div class="border rounded-4 p-3 h-100">
                             <div class="text-muted small">Serial Number</div>
-                            <div class="fw-semibold">{{ $property->serial_number ?: 'N/A' }}</div>
+                            <div class="fw-semibold">{{ $assignment?->unit_serial_numbers ?: 'N/A' }}</div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -48,12 +48,6 @@
                         <div class="border rounded-4 p-3 h-100">
                             <div class="text-muted small">Assigned Quantity</div>
                             <div class="fw-semibold">{{ $assignment->quantity_assigned }} {{ $property->unit }}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="border rounded-4 p-3 h-100">
-                            <div class="text-muted small">Assigned Serial Numbers</div>
-                            <div class="fw-semibold text-break">{{ $assignment->propertyUnits->pluck('serial_number')->join(', ') ?: 'N/A' }}</div>
                         </div>
                     </div>
                     <div class="col-md-6">

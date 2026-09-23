@@ -13,7 +13,7 @@ class PropertyManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_property_create_prefills_an_editable_serial_number(): void
+    public function test_property_create_has_per_unit_serial_fields(): void
     {
         $admin = User::factory()->create([
             'role' => User::ROLE_ADMIN,
@@ -23,8 +23,8 @@ class PropertyManagementTest extends TestCase
         $response = $this->actingAs($admin)->get('/properties/create');
 
         $response->assertOk();
-        $response->assertSee('name="serial_number"', false);
-        $response->assertSee('SN-');
+        $response->assertSee('name="units[0][serial_number]"', false);
+        $response->assertDontSee('name="serial_number"', false);
     }
 
     public function test_property_store_requires_a_property_code(): void

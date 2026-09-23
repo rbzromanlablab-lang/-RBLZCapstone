@@ -8,7 +8,7 @@
 </div>
 
 @php
-    $selectedQuantity = (int) old('quantity', $property->quantity ?: 1);
+    $selectedQuantity = max(0, min(1000, (int) old('quantity', $property->quantity ?? 1)));
     $selectedUnitCost = old('unit_cost', $property->unit_cost);
     $initialTotalCost = is_numeric($selectedUnitCost)
         ? number_format((float) $selectedUnitCost * $selectedQuantity, 2, '.', ',')
@@ -47,20 +47,6 @@
     </div>
 
     <div class="col-md-4">
-        <label for="serial_number" class="form-label">Serial Number</label>
-        <input
-            type="text"
-            id="serial_number"
-            name="serial_number"
-            class="form-control @error('serial_number') is-invalid @enderror"
-            value="{{ old('serial_number', $property->serial_number) }}"
-        >
-        @error('serial_number')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
         <label for="category" class="form-label">Category</label>
         <input
             type="text"
@@ -75,14 +61,14 @@
     </div>
 
     <div class="col-md-4">
-        <label for="quantity" class="form-label">Total Quantity</label>
+        <label for="quantity" class="form-label">{{ $property->exists ? 'Available Quantity' : 'Total Quantity' }}</label>
         <input
             type="number"
             id="quantity"
             name="quantity"
-            min="1"
+            min="{{ $property->exists ? 0 : 1 }}" max="1000"
             class="form-control @error('quantity') is-invalid @enderror"
-            value="{{ old('quantity', $property->quantity ?: 1) }}"
+            value="{{ old('quantity', $property->quantity ?? 1) }}"
             required
         >
         @error('quantity')
@@ -103,6 +89,10 @@
         @error('unit')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
+    </div>
+
+    <div class="col-12">
+        @include('properties.partials.unit-serials')
     </div>
 
     <div class="col-md-6">

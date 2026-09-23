@@ -26,7 +26,10 @@ class UpdateAssignmentRequest extends FormRequest
             'date_assigned' => ['required', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
             'department' => ['nullable', 'string', 'max:255'],
-            'serial_numbers' => ['nullable', 'string', 'max:20000'],
+            'serial_numbers' => ['prohibited'],
+            'unit_ids' => ['sometimes', 'array', 'max:1000'],
+            'unit_ids.*' => ['required', 'integer', 'distinct'],
+            'select_units' => ['sometimes', 'boolean'],
             'remarks' => ['nullable', 'string'],
         ];
     }

@@ -107,7 +107,7 @@
                 <thead>
                     <tr>
                         <th>Property Code</th><th>Serial Number</th><th>Property Name</th>
-                        <th>Category</th><th>Quantity</th><th>Assigned Serials</th>
+                        <th>Category</th><th>Quantity</th>
                         <th>Condition</th><th>Date Assigned</th><th>Assigned By</th>
                     </tr>
                 </thead>
@@ -116,18 +116,17 @@
                         @foreach ($property->assignments as $assignment)
                             <tr>
                                 <td>{{ $property->property_code }}</td>
-                                <td>{{ $property->serial_number ?: 'N/A' }}</td>
+                                <td>{{ $assignment?->unit_serial_numbers ?: 'N/A' }}</td>
                                 <td>{{ $property->property_name }}</td>
                                 <td>{{ $property->category ?: 'N/A' }}</td>
                                 <td>{{ $assignment->quantity_assigned }} {{ $property->unit }}</td>
-                                <td>{{ $assignment->propertyUnits->pluck('serial_number')->join(', ') ?: 'N/A' }}</td>
                                 <td>{{ ucfirst(str_replace('_', ' ', $property->condition_status)) }}</td>
                                 <td>{{ optional($assignment->date_assigned)->format('M d, Y') ?: 'N/A' }}</td>
                                 <td>{{ $assignment->assignedBy?->name ?: 'N/A' }}</td>
                             </tr>
                         @endforeach
                     @empty
-                        <tr><td colspan="9" class="empty">No assigned properties found.</td></tr>
+                        <tr><td colspan="8" class="empty">No assigned properties found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

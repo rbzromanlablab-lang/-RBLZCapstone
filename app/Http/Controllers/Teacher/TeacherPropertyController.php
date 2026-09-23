@@ -151,7 +151,10 @@ class TeacherPropertyController extends Controller
         ]);
 
         abort_unless($property->assignments->isNotEmpty(), 403);
-        $assignment = $property->assignments->first();
+        $assignment = $request->filled('assignment')
+            ? $property->assignments->firstWhere('id', $request->integer('assignment'))
+            : $property->assignments->first();
+        abort_unless($assignment, 404);
 
         return view('teacher.properties.show', [
             'property' => $property,

@@ -186,7 +186,7 @@ class AssignmentManagementTest extends TestCase
         $detailResponse = $this->actingAs($admin)->get('/assignments/'.$assignment->id);
 
         $detailResponse->assertOk();
-        $detailResponse->assertSee('Assigned Serial Numbers');
+        $detailResponse->assertSee('Serial Number');
         $assignment->propertyUnits->each(function (PropertyUnit $unit) use ($detailResponse): void {
             $detailResponse->assertSee($unit->serial_number);
         });

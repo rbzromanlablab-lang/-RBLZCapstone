@@ -6,14 +6,13 @@ use App\Models\Assignment;
 use App\Models\Property;
 use App\Models\PropertyHistory;
 use App\Models\PropertyRequestRecord;
-use App\Models\PropertyUnit;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 class RequestAssignmentService
 {
     // Called inside the request's transaction, after locking the request record.
-    public function assign(PropertyRequestRecord $request, int $propertyId, User $issuer): Assignment
+    public function assign(PropertyRequestRecord $request, int $propertyId, User $issuer, ?array $unitIds = null): Assignment
     {
         $property = Property::query()->lockForUpdate()->findOrFail($propertyId);
         $quantity = $request->requested_quantity;
@@ -23,16 +22,6 @@ class RequestAssignmentService
         $recipient = $request->requester;
         if (! $recipient || ! $recipient->is_active || ! $recipient->isTeacher()) {
             throw ValidationException::withMessages(['status' => 'The requester must be an active end-user.']);
-        }
-
-        // Maintain serialized inventory in the same way as direct assignments.
-        $missing = max(0, $property->quantity - $property->availableUnits()->count());
-        for ($i = 0; $i < $missing; $i++) {
-            $property->units()->create(['serial_number' => Property::generateSerialNumber(), 'status' => PropertyUnit::STATUS_AVAILABLE]);
-        }
-        $units = $property->availableUnits()->lockForUpdate()->limit($quantity)->get();
-        if ($units->count() !== $quantity) {
-            throw ValidationException::withMessages(['property_id' => 'Not enough available property units.']);
         }
 
         $assignment = Assignment::create([
@@ -50,9 +39,7 @@ class RequestAssignmentService
             'remarks' => 'Approved property request #'.$request->id.': '.$request->requested_item_name,
             'status' => Assignment::STATUS_ACTIVE,
         ]);
-        PropertyUnit::query()->whereIn('id', $units->pluck('id'))->update([
-            'assignment_id' => $assignment->id, 'status' => PropertyUnit::STATUS_ASSIGNED, 'updated_at' => now(),
-        ]);
+        app(InventoryUnitService::class)->assign($property, $assignment, $quantity, $unitIds);
         $property->decrement('quantity', $quantity);
         $property->refresh()->syncInventoryStatus();
         PropertyHistory::create([

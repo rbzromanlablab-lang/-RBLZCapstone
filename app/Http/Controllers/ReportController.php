@@ -81,7 +81,7 @@ class ReportController extends Controller
             foreach ($this->propertyQuery()->get() as $property) {
                 fputcsv($handle, [
                     $property->property_code,
-                    $property->serial_number,
+                    $property->unit_serial_numbers,
                     $property->property_name,
                     $property->category,
                     $property->brand,
@@ -110,7 +110,7 @@ class ReportController extends Controller
             foreach ($this->assignmentQuery()->get() as $assignment) {
                 fputcsv($handle, [
                     $assignment->property?->property_code,
-                    $assignment->property?->serial_number,
+                    $assignment->unit_serial_numbers,
                     $assignment->property?->property_name,
                     $assignment->teacher?->name,
                     $assignment->quantity_assigned,
@@ -149,6 +149,7 @@ class ReportController extends Controller
     protected function propertyQuery()
     {
         return Property::query()
+            ->with('units')
             ->withSum([
                 'assignments as active_quantity_assigned' => fn ($query) => $query->where('status', Assignment::STATUS_ACTIVE),
             ], 'quantity_assigned')
@@ -158,7 +159,7 @@ class ReportController extends Controller
     protected function assignmentQuery()
     {
         return Assignment::query()
-            ->with(['property.activeAssignments', 'teacher', 'assignedBy'])
+            ->with(['property.activeAssignments', 'propertyUnits', 'teacher', 'assignedBy'])
             ->latest('date_assigned');
     }
 
