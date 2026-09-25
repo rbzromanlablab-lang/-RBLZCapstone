@@ -43,7 +43,7 @@
                                     {{ $user->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
-                            <td>{{ $user->created_at?->format('M d, Y h:i A') ?: 'N/A' }}</td>
+                            <td>{{ $user->created_at_for_display?->format('M d, Y h:i A') ?: 'N/A' }}</td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
                                     @if (in_array($user->role, [\App\Models\User::ROLE_TEACHER, \App\Models\User::ROLE_STAFF], true))
