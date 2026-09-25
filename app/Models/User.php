@@ -61,7 +61,16 @@ class User extends Authenticatable
 
     public function getCreatedAtForDisplayAttribute(): ?Carbon
     {
-        return $this->created_at?->copy()->timezone(config('app.timezone', 'Asia/Manila'));
+        $createdAt = $this->getRawOriginal('created_at');
+
+        return filled($createdAt)
+            ? Carbon::parse($createdAt, 'UTC')->timezone('Asia/Manila')
+            : null;
+    }
+
+    public function freshTimestamp(): Carbon
+    {
+        return Carbon::now('UTC');
     }
 
     public function propertiesCreated(): HasMany
