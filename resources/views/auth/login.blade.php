@@ -184,37 +184,22 @@
         }
 
         .form-check-label,
-        .create-account-link,
         .login-note {
             color: var(--pards-muted);
             font-size: 14px;
         }
 
         .create-account-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 42px;
-            padding: 9px 20px;
-            border: 2px solid var(--pards-primary);
-            border-radius: 999px;
-            color: #fff;
-            background: var(--pards-primary);
-            font-size: 17px;
+            color: var(--pards-primary);
+            font-size: 14px;
             font-weight: 800;
-            text-decoration: none;
-            white-space: nowrap;
-            box-shadow: 0 7px 14px rgba(45, 32, 120, .2);
-            transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+            text-decoration: underline;
+            text-underline-offset: 3px;
         }
 
         .create-account-link:hover,
         .create-account-link:focus-visible {
-            color: #fff;
-            background: var(--pards-primary-dark);
-            border-color: var(--pards-primary-dark);
-            box-shadow: 0 9px 18px rgba(45, 32, 120, .28);
-            transform: translateY(-1px);
+            color: var(--pards-primary-dark);
         }
 
         .consent-check {

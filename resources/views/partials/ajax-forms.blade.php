@@ -213,7 +213,7 @@
                             message, title: feedback.title, expiresAt: Date.now() + 15000,
                         }));
                     } catch { /* The current page already displays the confirmation. */ }
-                    setTimeout(() => window.location.assign(data.redirect), 650);
+                    setTimeout(() => window.location.assign(data.redirect), 180);
                 } else {
                     setLoading(button, false);
                     delete form.dataset.ajaxSubmitting;
