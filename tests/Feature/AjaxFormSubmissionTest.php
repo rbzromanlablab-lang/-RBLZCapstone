@@ -88,6 +88,19 @@ class AjaxFormSubmissionTest extends TestCase
         $this->get('/login')->assertOk()->assertSee('Logged out successfully.');
     }
 
+    public function test_pages_are_not_cached_and_back_after_logout_rechecks_authentication(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $dashboard = $this->actingAs($admin)->get('/admin/dashboard')->assertOk();
+        $this->assertStringContainsString('no-store', (string) $dashboard->headers->get('Cache-Control'));
+
+        $this->post('/logout')->assertRedirect(route('login'));
+
+        $redirect = $this->get('/admin/dashboard')->assertRedirect(route('login'));
+        $this->assertStringContainsString('no-store', (string) $redirect->headers->get('Cache-Control'));
+    }
+
     public function test_refused_ajax_action_returns_error_instead_of_success(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

@@ -36,6 +36,7 @@ function setup(storage = new Map()) {
     let resolveRequest;
     let request;
     let destination;
+    let navigationMethod;
     const document = {
         body,
         createElement: () => new Element(),
@@ -50,7 +51,10 @@ function setup(storage = new Map()) {
             append(key, value) { this.set(key, value); }
         },
         CSS: {escape: value => value},
-        window: {location: {assign: value => { destination = value; }}},
+        window: {location: {
+            assign: value => { destination = value; navigationMethod = 'assign'; },
+            replace: value => { destination = value; navigationMethod = 'replace'; },
+        }},
         sessionStorage: {
             getItem: key => storage.get(key) ?? null,
             setItem: (key, value) => storage.set(key, value),
@@ -69,7 +73,7 @@ function setup(storage = new Map()) {
         respond: (data, ok = true) => resolveRequest({ok, status: ok ? 200 : 403, json: async () => data}),
         notice: () => body.children.find(node => !node.removed),
         request: () => request,
-        timers, storage, destination: () => destination,
+        timers, storage, destination: () => destination, navigationMethod: () => navigationMethod,
     };
 }
 
@@ -90,6 +94,7 @@ test('logout uses the clicked button, submits its value, and carries confirmatio
     assert.equal(page.notice().children[1].textContent, 'Logged out successfully.');
     page.timers.at(-1)();
     assert.equal(page.destination(), '/login');
+    assert.equal(page.navigationMethod(), 'replace');
     const loginPage = setup(page.storage);
     assert.equal(loginPage.notice().children[1].textContent, 'Logged out successfully.');
     assert.equal(page.storage.size, 0);
