@@ -240,3 +240,60 @@ erDiagram
 - Laravel support tables (`sessions`, `password_reset_tokens`, `cache`,
   `jobs`, `job_batches`, and `failed_jobs`) are framework infrastructure and
   are excluded from the operational ERD.
+
+## Text-only ERD relationship map
+
+Use this version when Mermaid preview is unavailable. `1` means one record,
+`0..1` means optional one record, and `0..*` means zero or many records.
+
+```text
+USERS
+  1 ----- 0..1 ADMINS              (admins.user_id)
+  1 ----- 0..1 STAFF               (staff.user_id)
+  1 ----- 0..1 TEACHERS            (teachers.user_id)
+  1 ----- 0..1 PROFILE_PHOTOS      (profile_photos.user_id)
+  1 ----- 0..* PROPERTIES          (properties.created_by)
+  1 ----- 0..* ASSIGNMENTS         (assignments.teacher_id: assignee)
+  1 ----- 0..* ASSIGNMENTS         (assignments.assigned_by: issuer)
+  1 ----- 0..* PROPERTY_REQUESTS   (requested_by, reviewed_by, processed_by)
+  1 ----- 0..* RETURNS             (returns.returned_by)
+  1 ----- 0..* DISPOSALS           (disposed_by, processed_by)
+
+PROPERTY_CATEGORIES
+  1 ----- 0..* PROPERTIES          (properties.property_category_id)
+
+LOCATIONS
+  1 ----- 0..* PROPERTIES          (properties.location_id)
+  1 ----- 0..* ASSIGNMENTS         (assignments.location_id)
+
+STAFF
+  1 ----- 0..* PROPERTIES          (properties.staff_id)
+  1 ----- 0..* ASSIGNMENTS         (assignments.staff_id)
+
+TEACHERS
+  1 ----- 0..* ASSIGNMENTS         (assignments.teacher_profile_id)
+
+PROPERTIES
+  1 ----- 0..* PROPERTY_UNITS      (property_units.property_id)
+  1 ----- 0..* ASSIGNMENTS         (assignments.property_id)
+  1 ----- 0..* PROPERTY_REQUESTS   (selected_property_id)
+  1 ----- 0..* DISPOSALS           (disposals.property_id)
+  1 ----- 0..* PROPERTY_HISTORIES  (property_histories.property_id)
+
+ASSIGNMENTS
+  1 ----- 0..* PROPERTY_UNITS      (property_units.assignment_id)
+  1 ----- 0..* RETURNS             (returns.assignment_id)
+  1 ----- 0..* DISPOSALS           (disposals.assignment_id)
+  1 ----- 0..1 PROPERTY_REQUESTS   (property_requests.assignment_id is unique)
+
+DISPOSAL_METHODS
+  1 ----- 0..* DISPOSALS           (disposals.disposal_method_id)
+
+ADMINS
+  1 ----- 0..* DISPOSALS           (disposals.admin_id)
+  1 ----- 0..* APPROVALS           (approvals.admin_id)
+
+APPROVALS
+  `reference_type` describes what was approved, but the current schema has no
+  `reference_id`, so it does not have a database relationship to another table.
+```

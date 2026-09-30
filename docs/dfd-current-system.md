@@ -131,3 +131,79 @@ stateDiagram-v2
 Staff review sets the request status to `awaiting_admin`. The final fulfillment creates an assignment, links it to the property request,
 marks the selected property units as assigned, and makes a printable receipt
 available to the end user, staff, and administrator.
+
+## Text-only DFD
+
+Use this version when Mermaid preview is unavailable in the IDE.
+
+### Level 0
+
+```text
++---------------------+  registration OTP / delivery result  +---------------------+
+| Email / OTP Service | <-----------------------------------> |        PARDS        |
++---------------------+                                      +---------------------+
+                                                                    ^       ^       ^
+                                                                    |       |       |
++---------------------+  login, request, profile, status, receipt |       |       | QR token,
+| Teacher / End User  | <----------------------------------------->+       |       | property details
++---------------------+                                                  |       |
+                                                                       inventory,  +---------------------+
+                                                                       assignments, | QR Code Scanner     |
++---------------------+  user management, approvals,                    reports   +---------------------+
+| Administrator       | <--- disposal decisions, dashboards, reports --->+       ^
++---------------------+                                                          |
+                                                                              QR result
+
++---------------------+  inventory, request review, assignments, returns,
+| Staff               | <--- disposal requests, availability, forms, reports ---> PARDS
++---------------------+
+```
+
+### Level 1
+
+```text
+[Teacher / Staff / Admin]
+            |
+            | account details, login, profile photo, user maintenance
+            v
+   (1.0 Account and Profile Management) <----> [D1 Users and Role Profiles]
+            |                                  [D6 Profile Photos and Sessions]
+            +---- OTP delivery request -----> [Email / OTP Service]
+            <---- OTP delivery result --------+
+
+[Staff / Admin]
+            |
+            | property details, quantity, serial numbers, location
+            v
+   (2.0 Property and Unit Inventory Management) <--> [D2 Properties, Units,
+            |                                            Categories, Locations]
+            +---- inventory availability / QR details ---> [Staff / Admin]
+
+[Teacher]
+            |
+            | requested item, quantity, purpose, needed date
+            v
+   (3.0 Property Request Review and Fulfillment) <--> [D3 Property Requests]
+            ^                  |                         ^
+            |                  | available stock          |
+            |                  v                          |
+    request status         [D2 Properties and Units]       |
+            |                                             review / approval
+         [Teacher]                                    [Staff / Administrator]
+            |
+            | approved request and selected property
+            v
+   (4.0 Assignment, Return, and Disposal Management)
+            |<--------------------> [D4 Assignments and Returns]
+            |<--------------------> [D2 Units and Availability]
+            |<--------------------> [D5 Disposals and Property History]
+            +---- receipt / accountability result ----> [Teacher / Staff]
+
+[QR Scanner / Staff / Admin]
+            |
+            | QR token or report request
+            v
+   (5.0 QR Lookup and Reporting) <---------> [D2, D4, D5]
+            |
+            +---- QR result, PDF, CSV, printable report ---> [Requester]
+```
