@@ -23,9 +23,16 @@ class Element {
 }
 class Input extends Element {}
 class Form extends Element {
-    constructor(button) { super(); this.button = button; this.method = 'post'; this.action = '/action'; }
+    constructor(button) {
+        super();
+        this.button = button;
+        this.method = 'post';
+        this.action = '/action';
+        this.token = new Input();
+        this.token.value = 'stale-token';
+    }
     hasAttribute() { return false; }
-    querySelector() { return this.button; }
+    querySelector(selector = '') { return selector.includes('_token') ? this.token : this.button; }
     querySelectorAll() { return []; }
 }
 
@@ -33,8 +40,9 @@ function setup(storage = new Map()) {
     const body = new Element();
     const timers = [];
     let submit;
-    let resolveRequest;
+    const resolvers = [];
     let request;
+    const requests = [];
     let destination;
     let navigationMethod;
     const document = {
@@ -52,9 +60,15 @@ function setup(storage = new Map()) {
         },
         CSS: {escape: value => value},
         window: {location: {
+            href: '/login',
             assign: value => { destination = value; navigationMethod = 'assign'; },
             replace: value => { destination = value; navigationMethod = 'replace'; },
         }},
+        DOMParser: class {
+            parseFromString() {
+                return {querySelector: () => ({value: 'fresh-token'})};
+            }
+        },
         sessionStorage: {
             getItem: key => storage.get(key) ?? null,
             setItem: (key, value) => storage.set(key, value),
@@ -64,15 +78,21 @@ function setup(storage = new Map()) {
         clearTimeout() {},
         fetch: (url, options) => {
             request = options;
-            return new Promise(resolve => { resolveRequest = resolve; });
+            requests.push({url, options});
+            return new Promise(resolve => { resolvers.push(resolve); });
         },
     };
     vm.runInNewContext(source, sandbox);
     return {
         submit: (form, button) => submit({target: form, submitter: button, preventDefault() {}, defaultPrevented: false}),
-        respond: (data, ok = true) => resolveRequest({ok, status: ok ? 200 : 403, json: async () => data}),
+        respond: (data, ok = true, status = ok ? 200 : 403) => resolvers.shift()({
+            ok, status, json: async () => data, text: async () => String(data),
+        }),
+        respondHtml: (html, ok = true) => resolvers.shift()({
+            ok, status: ok ? 200 : 500, json: async () => ({}), text: async () => html,
+        }),
         notice: () => body.children.find(node => !node.removed),
-        request: () => request,
+        request: () => request, requests: () => requests,
         timers, storage, destination: () => destination, navigationMethod: () => navigationMethod,
     };
 }
@@ -137,4 +157,27 @@ test('enter-key submission uses the form submit button and preserves the server 
     page.respond({message: 'Request approved successfully.'});
     await pending;
     assert.equal(page.notice().children[1].textContent, 'Request approved successfully.');
+});
+
+test('an expired CSRF token refreshes the page token and retries the submission', async () => {
+    const page = setup();
+    const button = new Element('Log in');
+    const form = new Form(button);
+    const pending = page.submit(form, button);
+
+    page.respond({message: 'Your session expired.'}, false, 419);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(page.requests().length, 2);
+    assert.equal(page.requests()[1].url, '/login');
+    assert.equal(page.requests()[1].options.cache, 'no-store');
+
+    page.respondHtml('<input name="_token" value="fresh-token">');
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(page.requests().length, 3);
+    assert.equal(form.token.value, 'fresh-token');
+    assert.equal(page.requests()[2].options.body.get('_token'), 'fresh-token');
+
+    page.respond({message: 'Logged in successfully.'});
+    await pending;
+    assert.equal(page.notice().children[1].textContent, 'Logged in successfully.');
 });

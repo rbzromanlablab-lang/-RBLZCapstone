@@ -171,6 +171,27 @@
             }
         } catch { /* Feedback still works when browser storage is unavailable. */ }
 
+        const refreshCsrfToken = async (form, formData) => {
+            const tokenField = form.querySelector('input[name="_token"]');
+            if (!tokenField) return false;
+
+            const page = await fetch(window.location.href, {
+                headers: {'Accept': 'text/html'},
+                credentials: 'same-origin',
+                cache: 'no-store',
+            });
+            if (!page.ok) return false;
+
+            const html = await page.text();
+            const freshDocument = new DOMParser().parseFromString(html, 'text/html');
+            const freshToken = freshDocument.querySelector('input[name="_token"]')?.value;
+            if (!freshToken) return false;
+
+            tokenField.value = freshToken;
+            formData.set('_token', freshToken);
+            return true;
+        };
+
         document.addEventListener('submit', async (event) => {
             const form = event.target;
             if (!(form instanceof HTMLFormElement) || form.hasAttribute('data-native-submit')) return;
@@ -189,7 +210,7 @@
             setLoading(button, true, feedback.loading);
 
             try {
-                const response = await fetch(form.action, {
+                const submitForm = () => fetch(form.action, {
                     method: form.method.toUpperCase() === 'GET' ? 'POST' : form.method.toUpperCase(),
                     body: formData,
                     headers: {
@@ -198,6 +219,20 @@
                     },
                     credentials: 'same-origin',
                 });
+                let response = await submitForm();
+
+                if (response.status === 419 && await refreshCsrfToken(form, formData)) {
+                    response = await submitForm();
+                }
+
+                if (response.status === 419) {
+                    showNotice('Your session expired. Refreshing the page now.', true);
+                    setLoading(button, false);
+                    delete form.dataset.ajaxSubmitting;
+                    setTimeout(() => window.location.replace(window.location.href), 180);
+                    return;
+                }
+
                 const data = await response.json().catch(() => ({}));
 
                 if (!response.ok) {
