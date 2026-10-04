@@ -297,3 +297,133 @@ APPROVALS
   `reference_type` describes what was approved, but the current schema has no
   `reference_id`, so it does not have a database relationship to another table.
 ```
+
+## Text-only ERD entities with attributes
+
+This is the ERD attribute view for documentation. The complete field types and
+definitions are in `data-dictionary-current-system.md`.
+
+```text
+USERS
+  PK  id
+      name
+  UQ  email
+      password
+      role                 [admin | staff | teacher]
+      is_active
+      email_verified_at
+      created_at, updated_at
+
+ADMINS                         STAFF                          TEACHERS
+  PK  id                         PK  id                         PK  id
+  FK  user_id (UQ)               FK  user_id (UQ)               FK  user_id (UQ)
+      department                     employee_number                 employee_number
+                                     department                      subject_area
+
+PROFILE_PHOTOS
+  PK  id
+  FK  user_id (UQ)
+      mime_type
+      contents
+
+PROPERTY_CATEGORIES            LOCATIONS
+  PK  id                         PK  id
+  UQ  category_name              UQ  location_name
+      description                    building
+                                     room
+                                     description
+
+PROPERTIES
+  PK  id
+  UQ  property_code
+      property_name
+  FK  property_category_id
+  FK  location_id
+  FK  created_by
+  FK  staff_id
+  UQ  serial_number
+      quantity
+      unit
+      unit_cost
+      status               [available | assigned | for_disposal | disposed]
+      condition_status
+      department
+      office
+      date_acquired
+  UQ  qr_token
+
+PROPERTY_UNITS
+  PK  id
+  FK  property_id
+  FK  assignment_id
+  UQ  serial_number
+  UQ  qr_token
+      status               [available | assigned | disposed]
+
+ASSIGNMENTS
+  PK  id
+  FK  property_id
+  FK  teacher_id           (actual assignee: teacher or staff user)
+  FK  teacher_profile_id
+  FK  assigned_by
+  FK  staff_id
+  FK  location_id
+      quantity_assigned
+      department
+      date_assigned
+      expected_return_date
+      returned_at
+      status               [active | returned | transferred | disposed]
+
+PROPERTY_REQUESTS
+  PK  id
+  FK  requested_by
+  FK  reviewed_by
+  FK  processed_by
+  FK  selected_property_id
+  FK  assignment_id (UQ)
+      requested_item_name
+      requested_quantity
+      needed_by
+      purpose
+      status               [pending | awaiting_admin | awaiting_stock |
+                            approved | rejected | fulfilled]
+      reviewed_at
+      processed_at
+
+RETURNS
+  PK  id
+  FK  assignment_id
+  FK  returned_by
+      return_date
+      returned_serial_numbers
+      status
+      remarks
+
+DISPOSAL_METHODS
+  PK  id
+  UQ  method_name
+      description
+
+DISPOSALS
+  PK  id
+  FK  property_id
+  FK  assignment_id
+  FK  disposed_by
+  FK  processed_by
+  FK  admin_id
+  FK  disposal_method_id
+      quantity_disposed
+      disposal_date
+      disposal_reason
+      status               [pending | approved | completed | cancelled]
+      processed_at
+
+PROPERTY_HISTORIES             APPROVALS
+  PK  id                         PK  id
+  FK  property_id                 FK  admin_id
+      action_type                     reference_type
+      reference                       approval_status
+      action_date                     approval_date
+      remarks                         remarks
+```
