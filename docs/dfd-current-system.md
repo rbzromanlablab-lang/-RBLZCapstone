@@ -13,11 +13,10 @@ flowchart LR
     staff[Staff]
     admin[Administrator]
     mail[Email / OTP Service]
-    scanner[QR Code Scanner]
     system([PARDS])
 
-    teacher -->|registration details, OTP, login, property request| system
-    system -->|account status, request status, assigned-property list, receipt| teacher
+    teacher -->|registration details, OTP, login, property request, QR lookup| system
+    system -->|account status, request status, assigned-property list, receipt, QR result| teacher
 
     staff -->|inventory, assignment, request review, return, disposal request| system
     system -->|inventory availability, request queue, accountability forms, reports| staff
@@ -27,9 +26,6 @@ flowchart LR
 
     system -->|registration OTP| mail
     mail -->|delivery result| system
-
-    scanner -->|property or unit QR token| system
-    system -->|property or unit identification| scanner
 ```
 
 ## Level 1 — Main Processes and Data Stores
@@ -40,7 +36,6 @@ flowchart TB
     staff[Staff]
     admin[Administrator]
     mail[Email / OTP Service]
-    scanner[QR Code Scanner]
 
     p1([1.0 Account and Profile Management])
     p2([2.0 Property and Unit Inventory Management])
@@ -91,13 +86,13 @@ flowchart TB
     p4 -->|assignment and return result| staff
     p4 -->|disposal result| admin
 
-    scanner -->|property or unit QR token| p5
+    teacher -->|QR lookup request| p5
     staff -->|report or QR document request| p5
     admin -->|report or QR document request| p5
     p5 <-->|property and unit lookup data| d2
     p5 <-->|assignment and return data| d4
     p5 <-->|disposal and history data| d5
-    p5 -->|property or unit details| scanner
+    p5 -->|property or unit details| teacher
     p5 -->|QR document, PDF/CSV report| staff
     p5 -->|QR document, PDF/CSV report| admin
 ```
@@ -139,24 +134,21 @@ Use this version when Mermaid preview is unavailable in the IDE.
 ### Level 0
 
 ```text
-+---------------------+  registration OTP / delivery result  +---------------------+
-| Email / OTP Service | <-----------------------------------> |        PARDS        |
-+---------------------+                                      +---------------------+
-                                                                    ^       ^       ^
-                                                                    |       |       |
-+---------------------+  login, request, profile, status, receipt |       |       | QR token,
-| Teacher / End User  | <----------------------------------------->+       |       | property details
-+---------------------+                                                  |       |
-                                                                       inventory,  +---------------------+
-                                                                       assignments, | QR Code Scanner     |
-+---------------------+  user management, approvals,                    reports   +---------------------+
-| Administrator       | <--- disposal decisions, dashboards, reports --->+       ^
-+---------------------+                                                          |
-                                                                              QR result
+[Email / OTP Service]
+  receives registration OTP request <----------------- [PARDS]
+  sends OTP delivery result --------------------------> [PARDS]
 
-+---------------------+  inventory, request review, assignments, returns,
-| Staff               | <--- disposal requests, availability, forms, reports ---> PARDS
-+---------------------+
+[Teacher / End User]
+  registration, login, property request, QR lookup --> [PARDS]
+  account status, request status, receipt, QR result <- [PARDS]
+
+[Staff]
+  inventory, request review, assignment, return ----> [PARDS]
+  availability, forms, queues, reports <------------- [PARDS]
+
+[Administrator]
+  user management, property decision, disposal ------> [PARDS]
+  dashboard, reports, approval queue, history <------ [PARDS]
 ```
 
 ### Level 1
@@ -199,11 +191,11 @@ Use this version when Mermaid preview is unavailable in the IDE.
             |<--------------------> [D5 Disposals and Property History]
             +---- receipt / accountability result ----> [Teacher / Staff]
 
-[QR Scanner / Staff / Admin]
+[Teacher / Staff / Admin]
             |
-            | QR token or report request
+            | QR lookup or report request
             v
    (5.0 QR Lookup and Reporting) <---------> [D2, D4, D5]
             |
-            +---- QR result, PDF, CSV, printable report ---> [Requester]
+            +---- QR result, PDF, CSV, printable report ---> [Teacher / Staff / Admin]
 ```
